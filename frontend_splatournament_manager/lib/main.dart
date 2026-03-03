@@ -1,19 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/homepage.dart';
 import 'package:frontend_splatournament_manager/settings_page.dart';
+import 'package:frontend_splatournament_manager/state_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+      ChangeNotifierProvider(
+        create: (_) => StateProvider(),
+        child: const SplatournamentApp(),
+      ),);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SplatournamentApp extends StatelessWidget {
+  const SplatournamentApp({super.key});
   @override
   Widget build(BuildContext context) {
+    final stateProvider = Provider.of<StateProvider>(context);
     return MaterialApp.router(
       title: 'Splatournament Manager',
       routerConfig: routes,
+      themeMode: stateProvider.theme,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.blue,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.deepPurple,
+      ),
     );
   }
 }
