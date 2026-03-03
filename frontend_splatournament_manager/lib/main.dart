@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_splatournament_manager/homepage.dart';
-import 'package:frontend_splatournament_manager/settings_page.dart';
+import 'package:frontend_splatournament_manager/pages/homepage.dart';
+import 'package:frontend_splatournament_manager/pages/settings_page.dart';
 import 'package:frontend_splatournament_manager/state_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +35,7 @@ class SplatournamentApp extends StatelessWidget {
 }
 var routes = GoRouter(
   routes: [
-    GoRoute(path: "/", builder: (context, state) => Homepage(),routes: [
+    GoRoute(path: "/", builder: (context, state) => HomePage(),routes: [
       GoRoute(path: "settings", builder: (context, state) => SettingsPage(),)
     ])
   ]
