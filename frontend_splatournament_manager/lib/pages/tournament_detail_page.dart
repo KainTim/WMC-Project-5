@@ -18,8 +18,8 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Tournament"),
-        backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(148),
-        elevation: 2,
+        backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(180),
+        elevation: 3,
         actions: [
           IconButton(
             onPressed: () {
