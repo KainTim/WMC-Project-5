@@ -13,25 +13,25 @@ const app = express();
 app.use(bodyParser.json());
 app.use(router);
 
-app.get('/tournaments/available', async (req: Request, res: Response) => {
+app.get('/tournaments', async (req: Request, res: Response) => {
     console.log(req.params)
     if (!req.params.id) {
         const tournaments = await tournamentService.getAllTournaments();
         console.log(tournaments)
         return res.send(tournaments);
     }
-    const tournament = await tournamentService.getBookById(+req.params.id);
+    const tournament = await tournamentService.getTournamentById(+req.params.id);
     if (!tournament) {
-        return res.status(404).send({error: 'Book not found'});
+        return res.status(404).send({error: 'Tournament not found'});
     }
     res.send(tournament);
 });
 
-app.post('/books', async (req: Request, res: Response) => {
+app.post('/tournaments', async (req: Request, res: Response) => {
     console.log("post");
     
     try {
-        await tournamentService.addBook(req.body);
+        await tournamentService.addTournament(req.body);
         res.status(200).send();
     }catch (err){
         console.log(err);
@@ -39,28 +39,28 @@ app.post('/books', async (req: Request, res: Response) => {
     }
 });
 
-app.put('/books', async (req: Request, res: Response) => {
+app.put('/tournaments', async (req: Request, res: Response) => {
     if (!req.query.id) {
         return res.status(400).send({error: 'Missing id parameter'});
     }
     try {
-        const success = await tournamentService.updateBook(+req.query.id!, req.body);
+        const success = await tournamentService.updateTournament(+req.query.id!, req.body);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to update book'});
+        return res.status(400).send({error: 'Failed to update Tournament'});
     }
-    res.status(200).send({message: 'Book updated successfully'});
+    res.status(200).send({message: 'Tournament updated successfully'});
 });
 
-app.delete('/books', async (req: Request, res: Response) => {
+app.delete('/tournaments', async (req: Request, res: Response) => {
     if (!req.query.id) {
         return res.status(400).send({error: 'Missing id parameter'});
     }
     try {
-        const success = await tournamentService.deleteBook(+req.query.id!);
+        const success = await tournamentService.deleteTournament(+req.query.id!);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to delete book'});
+        return res.status(400).send({error: 'Failed to delete Tournament'});
     }
-    res.status(200).send({message: 'Book deleted successfully'});
+    res.status(200).send({message: 'Tournament deleted successfully'});
 });
 
 app.listen(port, () => {
