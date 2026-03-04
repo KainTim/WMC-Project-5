@@ -2,14 +2,14 @@ class Tournament {
   final int id;
   final String name;
   final String description;
-  final int maxTeamsAmount;
+  final int maxTeamAmount;
   final int currentTeamAmount;
 
   Tournament({
     required this.id,
     required this.name,
     required this.description,
-    required this.maxTeamsAmount,
+    required this.maxTeamAmount,
     required this.currentTeamAmount,
   });
 
@@ -18,7 +18,7 @@ class Tournament {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      maxTeamsAmount: json['maxTeamsAmount'],
+      maxTeamAmount: json['maxTeamAmount'],
       currentTeamAmount: json['currentTeamAmount'],
     );
   }
