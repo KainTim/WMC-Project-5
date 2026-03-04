@@ -16,7 +16,7 @@ class StateProvider extends ChangeNotifier {
   List<Tournament>? _availableTournaments;
   Future<List<Tournament>> fetchAvailableTournaments() async {
     try {
-      var response = await http.get(Uri.parse('http://10.0.2.2:3000/tournaments/available'));
+      var response = await http.get(Uri.parse('http://10.0.2.2:3000/tournaments'));
       if (response.statusCode == 200) {
         final List<dynamic> list = json.decode(response.body);
 
@@ -24,7 +24,6 @@ class StateProvider extends ChangeNotifier {
         return _availableTournaments!;
       }
     } catch (e) {
-      print(e);
       _availableTournaments = null;
       return Future.error(e);
     }
