@@ -28,6 +28,7 @@ class HomePage extends StatelessWidget {
             onSelected: (value) {
               context.go("/settings");
             },
+            offset: Offset(0, 48),
             itemBuilder: (context) {
               return [PopupMenuItem(value: 1, child: Text("Settings"))];
             },
