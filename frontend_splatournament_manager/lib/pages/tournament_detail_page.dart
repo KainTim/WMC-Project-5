@@ -1,23 +1,108 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_splatournament_manager/state_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:frontend_splatournament_manager/models/tournament.dart';
 
-class TournamentDetailPage extends StatelessWidget {
-  final int tournamentId;
-  const TournamentDetailPage({super.key, required this.tournamentId});
+class TournamentDetailPage extends StatefulWidget {
+  final Tournament tournament;
+
+  const TournamentDetailPage({super.key, required this.tournament});
+
+  @override
+  State<TournamentDetailPage> createState() => _TournamentDetailPageState();
+}
+
+class _TournamentDetailPageState extends State<TournamentDetailPage> {
+  bool isShowingTeams = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Tournament"),),
-      body: Consumer<StateProvider>(builder: (BuildContext context, StateProvider value, Widget? child) {
-        var tournament = value.availableTournaments.where((x) => x.id == tournamentId).firstOrNull;
-        if(tournament == null){
-          return Center(child: Text("Tournament not found!"));
-        }
-        return Text("${tournament.maxTeamAmount}");
-      },)
+      appBar: AppBar(
+        title: Text("Tournament"),
+        backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(148),
+        elevation: 2,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                isShowingTeams = !isShowingTeams;
+              });
+            },
+            icon: Icon(Icons.group),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
+      body: Column(
+        children: [
+          DetailHeader(
+            tournament: widget.tournament,
+            onTeamsChipClicked: () {
+              setState(() {
+                isShowingTeams = !isShowingTeams;
+              });
+            },
+          ),
+          Builder(
+            builder: (context) {
+              // Demo Content
+              if (isShowingTeams) {
+                return Text("Teams");
+              }
+              return Text("Not Teams");
+            },
+          ),
+        ],
+      ),
     );
   }
+}
 
+class DetailHeader extends StatelessWidget {
+  final Tournament tournament;
+  final Function onTeamsChipClicked;
+
+  const DetailHeader({
+    super.key,
+    required this.tournament,
+    required this.onTeamsChipClicked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 350,
+      width: double.maxFinite,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadiusDirectional.vertical(
+            bottom: Radius.circular(8),
+          ),
+          color: Colors.red,
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            // Currently a demo image
+            image: NetworkImage(
+              "https://flutter.dev/assets/image_1.w635.f71cbb614cd16a40bfb87e128278227c.png",
+            ),
+          ),
+        ),
+        padding: EdgeInsets.fromLTRB(16, 0, 0, 12),
+        child: Column(
+          verticalDirection: VerticalDirection.up,
+          children: [
+            Row(
+              children: [
+                InputChip(
+                  onPressed: () => onTeamsChipClicked(),
+                  label: Text(
+                    "${tournament.currentTeamAmount} out of ${tournament.maxTeamAmount} Teams",
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

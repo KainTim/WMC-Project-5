@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/state_provider.dart';
 import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -11,21 +13,31 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Splatournament"),
         actions: [
+          Consumer<StateProvider>(
+            builder:
+                (BuildContext context, StateProvider value, Widget? child) {
+                  return IconButton(
+                    onPressed: () {
+                      value.notifyState();
+                    },
+                    icon: Icon(Icons.refresh),
+                  );
+                },
+          ),
           PopupMenuButton(
             onSelected: (value) {
               context.go("/settings");
             },
             itemBuilder: (context) {
-              return [PopupMenuItem(value: 1,child: Text("Settings"),)];
+              return [PopupMenuItem(value: 1, child: Text("Settings"))];
             },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          AvailableTournamentList(),
-        ],
-      )
+      body: Container(
+        padding: EdgeInsets.fromLTRB(0, 12, 0, 24),
+        child: Column(children: [Spacer(), AvailableTournamentList()]),
+      ),
     );
   }
 }

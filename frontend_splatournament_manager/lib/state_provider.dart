@@ -14,12 +14,14 @@ class StateProvider extends ChangeNotifier {
     notifyListeners();
   }
   List<Tournament>? _availableTournaments;
+  void notifyState(){
+    notifyListeners();
+  }
   Future<List<Tournament>> fetchAvailableTournaments() async {
     try {
       var response = await http.get(Uri.parse('http://10.0.2.2:3000/tournaments'));
       if (response.statusCode == 200) {
         final List<dynamic> list = json.decode(response.body);
-
         _availableTournaments = list.map((json) => Tournament.fromJson(json)).toList();
         return _availableTournaments!;
       }
