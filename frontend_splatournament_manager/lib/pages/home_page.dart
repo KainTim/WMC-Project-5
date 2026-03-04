@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
 import 'package:go_router/go_router.dart';
 
 class HomePage extends StatelessWidget {
@@ -20,12 +21,11 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [Text("Homepage")],
-        ),
-      ),
+      body: Column(
+        children: [
+          AvailableTournamentList(),
+        ],
+      )
     );
   }
 }

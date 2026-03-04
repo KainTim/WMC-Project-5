@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_splatournament_manager/pages/homepage.dart';
+import 'package:frontend_splatournament_manager/pages/home_page.dart';
 import 'package:frontend_splatournament_manager/pages/settings_page.dart';
 import 'package:frontend_splatournament_manager/state_provider.dart';
 import 'package:go_router/go_router.dart';
