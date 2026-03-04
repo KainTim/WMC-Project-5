@@ -23,15 +23,16 @@ class AvailableTournamentList extends StatelessWidget {
                 return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (context, index) {
+                    var tournament = list[index];
                     return ListTile(
                       leading: Icon(Icons.abc),
-                      title: Text(list[index].name),
-                      subtitle: Text(list[index].description),
+                      title: Text(tournament.name),
+                      subtitle: Text(tournament.description),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => TournamentDetailPage(),
+                            builder: (context) => TournamentDetailPage(tournamentId: tournament.id,),
                           ),
                         );
                       },

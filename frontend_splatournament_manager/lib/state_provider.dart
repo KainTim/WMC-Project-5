@@ -30,5 +30,5 @@ class StateProvider extends ChangeNotifier {
     }
     return[];
   }
-  List<Tournament> get user => _availableTournaments ?? [];
+  List<Tournament>  get availableTournaments => _availableTournaments ?? [];
 }
