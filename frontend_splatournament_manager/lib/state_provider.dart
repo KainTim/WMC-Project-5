@@ -5,6 +5,7 @@ import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:http/http.dart' as http;
 
 class StateProvider extends ChangeNotifier {
+  static const String baseUrl = "http://10.0.2.2:3000";
   ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get theme => _themeMode;
@@ -19,7 +20,7 @@ class StateProvider extends ChangeNotifier {
   }
   Future<List<Tournament>> fetchAvailableTournaments() async {
     try {
-      var response = await http.get(Uri.parse('http://10.0.2.2:3000/tournaments'));
+      var response = await http.get(Uri.parse('$baseUrl/tournaments'));
       if (response.statusCode == 200) {
         final List<dynamic> list = json.decode(response.body);
         _availableTournaments = list.map((json) => Tournament.fromJson(json)).toList();
