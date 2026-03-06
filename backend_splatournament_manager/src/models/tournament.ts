@@ -4,4 +4,6 @@ export interface Tournament {
   description:String;
   maxTeamAmount:number;
   currentTeamAmount:number;
+  registrationStartDate:String;
+  registrationEndDate:String;
 }
