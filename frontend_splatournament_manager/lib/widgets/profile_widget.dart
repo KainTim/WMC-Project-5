@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend_splatournament_manager/state_provider.dart';
+import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProfileWidget extends StatefulWidget {
@@ -17,7 +16,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StateProvider>(
+    return Consumer<AuthProvider>(
       builder: (context, provider, child) {
         return Column(
           children: [
@@ -31,7 +30,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               ),
             ),
             SizedBox(height: 8),
-            Text("Name", style: TextStyle(fontSize: 36)),
+            Text(provider.username??"Unknown User", style: TextStyle(fontSize: 36)),
             Container(
               margin: EdgeInsets.fromLTRB(48, 8, 48, 0),
               child: TextFormField(controller: teamController),
