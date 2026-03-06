@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/pages/home_page.dart';
+import 'package:frontend_splatournament_manager/pages/login_page.dart';
 import 'package:frontend_splatournament_manager/pages/settings_page.dart';
+import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
 import 'package:frontend_splatournament_manager/state_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      ChangeNotifierProvider(
-        create: (_) => StateProvider(),
-        child: const SplatournamentApp(),
-      ),);
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => StateProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const SplatournamentApp(),
+    ),
+  );
 }
 
 class SplatournamentApp extends StatelessWidget {
@@ -34,7 +40,9 @@ class SplatournamentApp extends StatelessWidget {
   }
 }
 var routes = GoRouter(
+  initialLocation: '/login',
   routes: [
+    GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
     GoRoute(path: "/", builder: (context, state) => HomePage(),routes: [
       GoRoute(path: "settings", builder: (context, state) => SettingsPage(),)
     ])
