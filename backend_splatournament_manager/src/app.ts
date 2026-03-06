@@ -3,10 +3,20 @@ import bodyParser from 'body-parser';
 import 'dotenv/config';
 
 import {TournamentService} from './services/tournament-service';
+import {UserService} from './services/user-service';
 import router from './middlewares/logger';
+import {Database} from 'sqlite3';
+import fs from "fs";
 
 
-const tournamentService = new TournamentService();
+const dbFilename = 'tournaments.sqlite';
+
+if (fs.existsSync(dbFilename)){
+    fs.unlinkSync(dbFilename);
+}
+const db = new Database(dbFilename);
+const tournamentService = new TournamentService(db);
+const userService = new UserService(db);
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -61,6 +71,36 @@ app.delete('/tournaments', async (req: Request, res: Response) => {
         return res.status(400).send({error: 'Failed to delete Tournament'});
     }
     res.status(200).send({message: 'Tournament deleted successfully'});
+});
+
+// Auth routes
+app.post('/register', async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).send({ error: 'Username and password are required' });
+    }
+    try {
+        const user = await userService.register(username, password);
+        res.status(201).send(user);
+    } catch (err: any) {
+        if (err.message?.includes('UNIQUE constraint failed')) {
+            return res.status(409).send({ error: 'Username already exists' });
+        }
+        res.status(500).send({ error: 'Registration failed' });
+    }
+});
+
+app.post('/login', async (req: Request, res: Response) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).send({ error: 'Username and password are required' });
+    }
+    try {
+        const user = await userService.login(username, password);
+        res.status(200).send(user);
+    } catch (err: any) {
+        res.status(401).send({ error: err.message || 'Login failed' });
+    }
 });
 
 app.listen(port, () => {

@@ -5,14 +5,10 @@ import {Database, RunResult} from "sqlite3";
 
 export class TournamentService {
     private csvFilename = 'csv/tournaments.csv';
-    private dbFilename = 'tournaments.sqlite';
     private db: Database;
 
-    constructor() {
-        if (fs.existsSync(this.dbFilename)) {
-            fs.unlinkSync(this.dbFilename);
-        }
-        this.db = new Database(this.dbFilename);
+    constructor(db: Database) {
+        this.db = db;
         this.db.serialize(() => {
             this.db.run(`CREATE TABLE IF NOT EXISTS Tournaments
                          (
