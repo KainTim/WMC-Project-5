@@ -2,7 +2,7 @@ node_modules
 dist/*
 !dist/csv/
 dist/csv/*
-!dist/csv/tournaments.csv
+!dist/csv/*.csv
 *.sqlite
 _requests.http
 request_logs.txt
