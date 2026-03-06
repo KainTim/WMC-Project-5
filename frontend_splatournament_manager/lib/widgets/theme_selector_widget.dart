@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../state_provider.dart';
+import '../providers/theme_provider.dart';
 
 class ThemeSelectorWidget extends StatelessWidget {
   ThemeSelectorWidget({super.key});
@@ -23,7 +23,7 @@ class ThemeSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stateProvider = Provider.of<StateProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
       decoration: BoxDecoration(color: Theme.of(context).hoverColor, borderRadius: BorderRadius.circular(8)),
       padding: const EdgeInsets.all(8.0),
@@ -37,10 +37,10 @@ class ThemeSelectorWidget extends StatelessWidget {
             child: DropdownButtonFormField(
               icon: Icon(Icons.color_lens),
               items: dropdownElements,
-              initialValue: stateProvider.theme,
+              initialValue: themeProvider.theme,
               onChanged: (value) {
                 if (value == null) return;
-                stateProvider.setTheme(value);
+                themeProvider.setTheme(value);
               },
             ),
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:frontend_splatournament_manager/pages/tournament_detail_page.dart';
-import 'package:frontend_splatournament_manager/state_provider.dart';
+import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
 import 'package:provider/provider.dart';
 
 class AvailableTournamentList extends StatelessWidget {
@@ -17,13 +17,10 @@ class AvailableTournamentList extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 350,
-            child: Consumer<StateProvider>(
-              builder:
-                  (
-                    BuildContext context,
-                    StateProvider provider,
-                    Widget? child,
-                  ) => TournamentListFutureBuilder(provider: provider),
+            child: Consumer<TournamentProvider>(
+              builder: (context, provider, _) {
+                return TournamentListFutureBuilder(provider: provider);
+              },
             ),
           ),
         ],
@@ -33,22 +30,30 @@ class AvailableTournamentList extends StatelessWidget {
 }
 
 class TournamentListFutureBuilder extends StatelessWidget {
-  final StateProvider provider;
+  final TournamentProvider provider;
 
   const TournamentListFutureBuilder({super.key, required this.provider});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: provider.fetchAvailableTournaments(),
+    return FutureBuilder<List<Tournament>>(
+      future: provider.ensureTournamentsLoaded(),
       builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData ||
-            snapshot.connectionState == ConnectionState.waiting) {
+        final list = provider.availableTournaments;
+        print(list);
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            list.isEmpty) {
           return Center(child: CircularProgressIndicator());
         }
-        var list = snapshot.data!;
+
+        if (snapshot.hasError && list.isEmpty) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        if (list.isEmpty) {
+          return Center(child: Text('No tournaments found'));
+        }
+
         return ListView.builder(
           shrinkWrap: false,
           itemCount: list.length,
@@ -85,4 +90,3 @@ class TournamentListItem extends StatelessWidget {
     );
   }
 }
-

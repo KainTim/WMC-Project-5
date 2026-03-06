@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_splatournament_manager/state_provider.dart';
+import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
 import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -13,16 +13,20 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Splatournament"),
         actions: [
-          Consumer<StateProvider>(
-            builder:
-                (BuildContext context, StateProvider value, Widget? child) {
-                  return IconButton(
-                    onPressed: () {
-                      value.notifyState();
-                    },
-                    icon: Icon(Icons.refresh),
-                  );
-                },
+          IconButton(
+            onPressed: () async {
+              final tournamentProvider =
+                  Provider.of<TournamentProvider>(context, listen: false);
+              try {
+                await tournamentProvider.refreshAvailableTournaments();
+              } catch (_) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to refresh tournaments')),
+                );
+              }
+            },
+            icon: Icon(Icons.refresh),
           ),
           PopupMenuButton(
             onSelected: (value) {
