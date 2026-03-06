@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/widgets/theme_selector_widget.dart';
 
+import '../widgets/profile_widget.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -13,11 +15,15 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Splatournament")),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [ThemeSelectorWidget()],
-        ),
+      body: Column(
+        children: [
+          SizedBox(height: 24),
+          ProfileWidget(),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [ThemeSelectorWidget()],
+          ),
+        ],
       ),
     );
   }
