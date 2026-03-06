@@ -53,6 +53,12 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.dashboard_customize_rounded),
+        onPressed: () {
+          print("Tournament entered");
+        },
+      ),
     );
   }
 }
@@ -77,7 +83,6 @@ class DetailHeader extends StatelessWidget {
           borderRadius: BorderRadiusDirectional.vertical(
             bottom: Radius.circular(8),
           ),
-          color: Colors.red,
           image: DecorationImage(
             fit: BoxFit.cover,
             // Currently a demo image
