@@ -1,3 +1,5 @@
+import 'package:frontend_splatournament_manager/models/team.dart';
+
 class Tournament {
   final int id;
   final String name;
@@ -6,6 +8,7 @@ class Tournament {
   final int currentTeamAmount;
   final String registrationStartDate;
   final String registrationEndDate;
+  final List<Team> teams;
 
   Tournament({
     required this.id,
@@ -15,6 +18,7 @@ class Tournament {
     required this.currentTeamAmount,
     required this.registrationStartDate,
     required this.registrationEndDate,
+    this.teams = const [],
   });
 
   factory Tournament.fromJson(dynamic json) {
@@ -26,6 +30,9 @@ class Tournament {
       currentTeamAmount: json['currentTeamAmount'],
       registrationStartDate: json['registrationStartDate'],
       registrationEndDate: json['registrationEndDate'],
+      teams: (json['teams'] as List<dynamic>? ?? [])
+          .map((t) => Team.fromJson(t as Map<String, dynamic>))
+          .toList(),
     );
   }
 

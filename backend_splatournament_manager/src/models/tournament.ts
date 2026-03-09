@@ -1,9 +1,12 @@
+import { Team } from './team';
+
 export interface Tournament {
-  id:number;
-  name:String;
-  description:String;
-  maxTeamAmount:number;
-  currentTeamAmount:number;
-  registrationStartDate:String;
-  registrationEndDate:String;
+  id: number;
+  name: String;
+  description: String;
+  maxTeamAmount: number;
+  currentTeamAmount: number;
+  registrationStartDate: String;
+  registrationEndDate: String;
+  teams?: Team[];
 }

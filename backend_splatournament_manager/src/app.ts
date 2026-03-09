@@ -4,6 +4,7 @@ import 'dotenv/config';
 
 import {TournamentService} from './services/tournament-service';
 import {UserService} from './services/user-service';
+import {TeamService} from './services/team-service';
 import router from './middlewares/logger';
 import {Database} from 'sqlite3';
 import fs from "fs";
@@ -17,6 +18,7 @@ if (fs.existsSync(dbFilename)){
 const db = new Database(dbFilename);
 const tournamentService = new TournamentService(db);
 const userService = new UserService(db);
+const teamService = new TeamService(db);
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -24,12 +26,11 @@ app.use(bodyParser.json());
 app.use(router);
 
 app.get('/tournaments', async (req: Request, res: Response) => {
-    console.log(req.params)
-    if (!req.params.id) {
-        const tournaments = await tournamentService.getAllTournaments();
-        console.log(tournaments)
-        return res.send(tournaments);
-    }
+    const tournaments = await tournamentService.getAllTournaments();
+    return res.send(tournaments);
+});
+
+app.get('/tournaments/:id', async (req: Request, res: Response) => {
     const tournament = await tournamentService.getTournamentById(+req.params.id);
     if (!tournament) {
         return res.status(404).send({error: 'Tournament not found'});
@@ -38,42 +39,113 @@ app.get('/tournaments', async (req: Request, res: Response) => {
 });
 
 app.post('/tournaments', async (req: Request, res: Response) => {
-    console.log("post");
-    
     try {
         await tournamentService.addTournament(req.body);
-        res.status(200).send();
-    }catch (err){
+        res.status(201).send();
+    } catch (err){
         console.log(err);
-        res.status(404).send();
+        res.status(400).send({error: 'Failed to create tournament'});
     }
 });
 
-app.put('/tournaments', async (req: Request, res: Response) => {
-    if (!req.query.id) {
-        return res.status(400).send({error: 'Missing id parameter'});
-    }
+app.put('/tournaments/:id', async (req: Request, res: Response) => {
     try {
-        const success = await tournamentService.updateTournament(+req.query.id!, req.body);
+        await tournamentService.updateTournament(+req.params.id, req.body);
     } catch (err) {
         return res.status(400).send({error: 'Failed to update Tournament'});
     }
     res.status(200).send({message: 'Tournament updated successfully'});
 });
 
-app.delete('/tournaments', async (req: Request, res: Response) => {
-    if (!req.query.id) {
-        return res.status(400).send({error: 'Missing id parameter'});
-    }
+app.delete('/tournaments/:id', async (req: Request, res: Response) => {
     try {
-        const success = await tournamentService.deleteTournament(+req.query.id!);
+        await tournamentService.deleteTournament(+req.params.id);
     } catch (err) {
         return res.status(400).send({error: 'Failed to delete Tournament'});
     }
     res.status(200).send({message: 'Tournament deleted successfully'});
 });
 
-// Auth routes
+app.get('/teams', async (req: Request, res: Response) => {
+    const teams = await teamService.getAllTeams();
+    res.send(teams);
+});
+
+app.get('/teams/:id', async (req: Request, res: Response) => {
+    const team = await teamService.getTeamById(+req.params.id);
+    if (!team) {
+        return res.status(404).send({error: 'Team not found'});
+    }
+    res.send(team);
+});
+
+app.post('/teams', async (req: Request, res: Response) => {
+    const {name, tag, description} = req.body;
+    if (!name || !tag) {
+        return res.status(400).send({error: 'name and tag are required'});
+    }
+    try {
+        const team = await teamService.addTeam({name, tag, description: description ?? ''});
+        res.status(201).send(team);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to create team'});
+    }
+});
+
+app.put('/teams/:id', async (req: Request, res: Response) => {
+    try {
+        await teamService.updateTeam(+req.params.id, req.body);
+    } catch (err) {
+        return res.status(400).send({error: 'Failed to update team'});
+    }
+    res.status(200).send({message: 'Team updated successfully'});
+});
+
+app.delete('/teams/:id', async (req: Request, res: Response) => {
+    try {
+        await teamService.deleteTeam(+req.params.id);
+    } catch (err) {
+        return res.status(400).send({error: 'Failed to delete team'});
+    }
+    res.status(200).send({message: 'Team deleted successfully'});
+});
+
+app.get('/tournaments/:id/teams', async (req: Request, res: Response) => {
+    const teams = await teamService.getTeamsByTournamentId(+req.params.id);
+    res.send(teams);
+});
+
+app.post('/tournaments/:id/teams', async (req: Request, res: Response) => {
+    const {teamId} = req.body;
+    if (!teamId) {
+        return res.status(400).send({error: 'teamId is required'});
+    }
+    try {
+        const entry = await teamService.registerTeamForTournament(+req.params.id, +teamId);
+        res.status(201).send(entry);
+    } catch (err: any) {
+        if (err.message?.includes('UNIQUE constraint failed')) {
+            return res.status(409).send({error: 'Team is already registered for this tournament'});
+        }
+        res.status(400).send({error: 'Failed to register team'});
+    }
+});
+
+app.delete('/tournaments/:id/teams/:teamId', async (req: Request, res: Response) => {
+    try {
+        await teamService.removeTeamFromTournament(+req.params.id, +req.params.teamId);
+    } catch (err) {
+        return res.status(400).send({error: 'Failed to remove team from tournament'});
+    }
+    res.status(200).send({message: 'Team removed from tournament'});
+});
+
+app.get('/teams/:id/tournaments', async (req: Request, res: Response) => {
+    const entries = await teamService.getTournamentsByTeamId(+req.params.id);
+    res.send(entries);
+});
+
 app.post('/register', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     if (!username || !password) {

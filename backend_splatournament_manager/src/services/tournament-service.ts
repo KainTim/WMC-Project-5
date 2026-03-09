@@ -1,4 +1,5 @@
 import {Tournament} from '../models/tournament';
+import {Team} from '../models/team';
 import fs from 'fs';
 import path from 'path';
 import {Database, RunResult} from "sqlite3";
@@ -26,27 +27,83 @@ export class TournamentService {
 
     getAllTournaments(): Promise<Tournament[]> {
         return new Promise<Tournament[]>((resolve, reject) => {
-            this.db.all(`SELECT *
-                         FROM Tournaments`, (err: RunResult, rows: Tournament[]) => {
-                if (!err) {
-                    resolve(rows);
+            this.db.all(
+                `SELECT t.*, tm.id as teamId, tm.name as teamName, tm.tag as teamTag,
+                        tm.description as teamDescription, tm.createdAt as teamCreatedAt
+                 FROM Tournaments t
+                 LEFT JOIN TournamentTeams tt ON t.id = tt.tournamentId
+                 LEFT JOIN Teams tm ON tt.teamId = tm.id`,
+                (err: Error | null, rows: any[]) => {
+                    if (err) return reject(err);
+                    const tournamentsMap = new Map<number, Tournament>();
+                    for (const row of rows) {
+                        if (!tournamentsMap.has(row.id)) {
+                            tournamentsMap.set(row.id, {
+                                id: row.id,
+                                name: row.name,
+                                description: row.description,
+                                maxTeamAmount: row.maxTeamAmount,
+                                currentTeamAmount: row.currentTeamAmount,
+                                registrationStartDate: row.registrationStartDate,
+                                registrationEndDate: row.registrationEndDate,
+                                teams: [],
+                            });
+                        }
+                        if (row.teamId) {
+                            tournamentsMap.get(row.id)!.teams!.push({
+                                id: row.teamId,
+                                name: row.teamName,
+                                tag: row.teamTag,
+                                description: row.teamDescription,
+                                createdAt: row.teamCreatedAt,
+                            } as Team);
+                        }
+                    }
+                    resolve(Array.from(tournamentsMap.values()));
                 }
-                reject(err);
-            });
+            );
         });
     }
 
-    getTournamentById(id: number): Promise<Tournament> {
-        return new Promise<Tournament>((resolve, reject) => {
-            this.db.get(`Select *
-                         From Tournaments
-                         WHERE id = ${id}`, (err: RunResult, tournament: Tournament) => {
-                if (!err) {
+    getTournamentById(id: number): Promise<Tournament | undefined> {
+        return new Promise<Tournament | undefined>((resolve, reject) => {
+            this.db.all(
+                `SELECT t.*, tm.id as teamId, tm.name as teamName, tm.tag as teamTag,
+                        tm.description as teamDescription, tm.createdAt as teamCreatedAt
+                 FROM Tournaments t
+                 LEFT JOIN TournamentTeams tt ON t.id = tt.tournamentId
+                 LEFT JOIN Teams tm ON tt.teamId = tm.id
+                 WHERE t.id = ?`,
+                [id],
+                (err: Error | null, rows: any[]) => {
+                    if (err) return reject(err);
+                    if (!rows || rows.length === 0) return resolve(undefined);
+                    const first = rows[0];
+                    const tournament: Tournament = {
+                        id: first.id,
+                        name: first.name,
+                        description: first.description,
+                        maxTeamAmount: first.maxTeamAmount,
+                        currentTeamAmount: first.currentTeamAmount,
+                        registrationStartDate: first.registrationStartDate,
+                        registrationEndDate: first.registrationEndDate,
+                        teams: [],
+                    };
+                    for (const row of rows) {
+                        if (row.teamId) {
+                            tournament.teams!.push({
+                                id: row.teamId,
+                                name: row.teamName,
+                                tag: row.teamTag,
+                                description: row.teamDescription,
+                                createdAt: row.teamCreatedAt,
+                            } as Team);
+                        }
+                    }
                     resolve(tournament);
                 }
-                reject(err);
-            });
-        })
+            );
+        });
     }
 
     addTournament(tournament: Tournament): Promise<void> {
