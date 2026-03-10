@@ -40,4 +40,35 @@ class TournamentProvider extends ChangeNotifier {
     _initialLoadFuture = fetchAvailableTournaments();
     return _initialLoadFuture!;
   }
+
+  Future<void> createTournament(
+    String name,
+    String description,
+    int maxTeamAmount,
+    DateTime registrationStartDate,
+    DateTime registrationEndDate,
+  ) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/tournaments'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'name': name,
+        'description': description,
+        'maxTeamAmount': maxTeamAmount,
+        //weird date formatting
+        'registrationStartDate': registrationStartDate.toIso8601String().split(
+          'T',
+        )[0],
+        'registrationEndDate': registrationEndDate.toIso8601String().split(
+          'T',
+        )[0],
+      }),
+    );
+
+    if (response.statusCode != HttpStatus.created) {
+      throw Exception('Failed to create tournament (${response.statusCode})');
+    }
+
+    await refreshAvailableTournaments();
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
 import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
+import 'package:frontend_splatournament_manager/pages/create_tournament_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -15,8 +16,10 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () async {
-              final tournamentProvider =
-                  Provider.of<TournamentProvider>(context, listen: false);
+              final tournamentProvider = Provider.of<TournamentProvider>(
+                context,
+                listen: false,
+              );
               try {
                 await tournamentProvider.refreshAvailableTournaments();
               } catch (_) {
@@ -42,6 +45,17 @@ class HomePage extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.fromLTRB(0, 12, 0, 24),
         child: Column(children: [Spacer(), AvailableTournamentList()]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const CreateTournamentPage(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -62,9 +62,9 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
                 onPressed: () {
                   //TODO: Backend Call
                   ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("tournament entered")),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text("tournament entered")));
                 },
               ),
             ),
@@ -90,8 +90,10 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
   @override
   void initState() {
     super.initState();
-    _teamsFuture = Provider.of<TeamProvider>(context, listen: false)
-        .getTeamsByTournament(widget.tournament.id);
+    _teamsFuture = Provider.of<TeamProvider>(
+      context,
+      listen: false,
+    ).getTeamsByTournament(widget.tournament.id);
   }
 
   @override
@@ -132,20 +134,31 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
                           ? Text(team.description)
                           : null,
                       trailing: IconButton(
-                        icon: Icon(Icons.remove_circle_outline, color: Colors.red),
+                        icon: Icon(
+                          Icons.remove_circle_outline,
+                          color: Colors.red,
+                        ),
                         onPressed: () async {
                           try {
-                            await Provider.of<TeamProvider>(context, listen: false)
-                                .removeTeamFromTournament(widget.tournament.id, team.id);
+                            await Provider.of<TeamProvider>(
+                              context,
+                              listen: false,
+                            ).removeTeamFromTournament(
+                              widget.tournament.id,
+                              team.id,
+                            );
                             setState(() {
-                              _teamsFuture =
-                                  Provider.of<TeamProvider>(context, listen: false)
-                                      .getTeamsByTournament(widget.tournament.id);
+                              _teamsFuture = Provider.of<TeamProvider>(
+                                context,
+                                listen: false,
+                              ).getTeamsByTournament(widget.tournament.id);
                             });
                           } catch (e) {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Failed to remove team: $e')),
+                              SnackBar(
+                                content: Text('Failed to remove team: $e'),
+                              ),
                             );
                           }
                         },
@@ -160,7 +173,6 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
       ),
     );
   }
-
 }
 
 class TournamentContentWidget extends StatelessWidget {
@@ -205,8 +217,7 @@ class TournamentContentWidget extends StatelessWidget {
                         fontSize: 17,
                       ),
                     ),
-                    //TODO: Should show the format instead
-                    Text(tournament.description),
+                    Text("Single Elimination"),
                     Spacer(),
                     SizedBox(
                       width: double.infinity,
