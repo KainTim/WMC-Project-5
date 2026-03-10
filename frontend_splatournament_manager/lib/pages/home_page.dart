@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.fromLTRB(0, 12, 0, 24),
+        padding: EdgeInsets.fromLTRB(0, 12, 0, 36),
         child: Column(children: [Spacer(), AvailableTournamentList()]),
       ),
       floatingActionButton: FloatingActionButton(

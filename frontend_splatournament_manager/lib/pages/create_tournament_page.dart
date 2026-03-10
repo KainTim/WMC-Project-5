@@ -14,7 +14,8 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _maxTeamAmountController = TextEditingController();
+
+  int _maxTeamAmount = 2;
 
   DateTime? _startDate;
   DateTime? _endDate;
@@ -65,7 +66,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
       await provider.createTournament(
         _nameController.text,
         _descriptionController.text,
-        int.parse(_maxTeamAmountController.text),
+        _maxTeamAmount,
         _startDate!,
         _endDate!,
       );
@@ -85,7 +86,6 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _maxTeamAmountController.dispose();
     super.dispose();
   }
 
@@ -115,16 +115,21 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                     value == null || value.isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _maxTeamAmountController,
+              DropdownButtonFormField<int>(
+                initialValue: _maxTeamAmount,
                 decoration: const InputDecoration(labelText: 'Max Teams'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                    return 'Must be a positive integer';
+                items: [2, 4, 8].map((int value) {
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value.toString()),
+                  );
+                }).toList(),
+                onChanged: (int? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      _maxTeamAmount = newValue;
+                    });
                   }
-                  return null;
                 },
               ),
               const SizedBox(height: 24),
