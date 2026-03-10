@@ -1,8 +1,11 @@
 import { User } from '../models/user';
 import { Database } from 'sqlite3';
 import * as argon2 from 'argon2';
+import * as jwt from 'jsonwebtoken';
 import fs from "fs";
 import path from "path";
+
+const JWT_SECRET = process.env.JWT_SECRET || "key";
 
 export class UserService {
     private csvFilename = 'csv/users.csv';
@@ -40,7 +43,7 @@ export class UserService {
         });
     }
 
-    register(username: string, password: string): Promise<{ id: number; username: string }> {
+    register(username: string, password: string): Promise<{ id: number; username: string; token: string }> {
         return new Promise(async (resolve, reject) => {
             try {
                 const hash = await argon2.hash(password);
@@ -51,7 +54,8 @@ export class UserService {
                         if (err) {
                             return reject(err);
                         }
-                        resolve({ id: this.lastID, username });
+                        const token = jwt.sign({ id: this.lastID, username }, JWT_SECRET, { expiresIn: '7d' });
+                        resolve({ id: this.lastID, username, token });
                     }
                 );
             } catch (err) {
@@ -60,7 +64,7 @@ export class UserService {
         });
     }
 
-    login(username: string, password: string): Promise<{ id: number; username: string }> {
+    login(username: string, password: string): Promise<{ id: number; username: string; token: string }> {
         return new Promise((resolve, reject) => {
             this.db.get(
                 'SELECT * FROM Users WHERE username = ?',
@@ -77,7 +81,8 @@ export class UserService {
                         if (!valid) {
                             return reject(new Error('Invalid password'));
                         }
-                        resolve({ id: user.id, username: user.username });
+                        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+                        resolve({ id: user.id, username: user.username, token });
                     } catch (e) {
                         reject(e);
                     }
@@ -86,5 +91,3 @@ export class UserService {
         });
     }
 }
-
-

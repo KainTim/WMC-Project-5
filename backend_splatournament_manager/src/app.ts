@@ -5,6 +5,7 @@ import 'dotenv/config';
 import {TournamentService} from './services/tournament-service';
 import {UserService} from './services/user-service';
 import {TeamService} from './services/team-service';
+import {authMiddleware} from './middlewares/auth-middleware';
 import router from './middlewares/logger';
 import {Database} from 'sqlite3';
 import fs from "fs";
@@ -38,7 +39,7 @@ app.get('/tournaments/:id', async (req: Request, res: Response) => {
     res.send(tournament);
 });
 
-app.post('/tournaments', async (req: Request, res: Response) => {
+app.post('/tournaments', authMiddleware, async (req: Request, res: Response) => {
     try {
         await tournamentService.addTournament(req.body);
         res.status(201).send();
@@ -48,7 +49,7 @@ app.post('/tournaments', async (req: Request, res: Response) => {
     }
 });
 
-app.put('/tournaments/:id', async (req: Request, res: Response) => {
+app.put('/tournaments/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await tournamentService.updateTournament(+req.params.id, req.body);
     } catch (err) {
@@ -57,7 +58,7 @@ app.put('/tournaments/:id', async (req: Request, res: Response) => {
     res.status(200).send({message: 'Tournament updated successfully'});
 });
 
-app.delete('/tournaments/:id', async (req: Request, res: Response) => {
+app.delete('/tournaments/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await tournamentService.deleteTournament(+req.params.id);
     } catch (err) {
@@ -79,7 +80,7 @@ app.get('/teams/:id', async (req: Request, res: Response) => {
     res.send(team);
 });
 
-app.post('/teams', async (req: Request, res: Response) => {
+app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
     const {name, tag, description} = req.body;
     if (!name || !tag) {
         return res.status(400).send({error: 'name and tag are required'});
@@ -93,7 +94,7 @@ app.post('/teams', async (req: Request, res: Response) => {
     }
 });
 
-app.put('/teams/:id', async (req: Request, res: Response) => {
+app.put('/teams/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await teamService.updateTeam(+req.params.id, req.body);
     } catch (err) {
@@ -102,7 +103,7 @@ app.put('/teams/:id', async (req: Request, res: Response) => {
     res.status(200).send({message: 'Team updated successfully'});
 });
 
-app.delete('/teams/:id', async (req: Request, res: Response) => {
+app.delete('/teams/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await teamService.deleteTeam(+req.params.id);
     } catch (err) {
@@ -116,7 +117,7 @@ app.get('/tournaments/:id/teams', async (req: Request, res: Response) => {
     res.send(teams);
 });
 
-app.post('/tournaments/:id/teams', async (req: Request, res: Response) => {
+app.post('/tournaments/:id/teams', authMiddleware, async (req: Request, res: Response) => {
     const {teamId} = req.body;
     if (!teamId) {
         return res.status(400).send({error: 'teamId is required'});
@@ -132,7 +133,7 @@ app.post('/tournaments/:id/teams', async (req: Request, res: Response) => {
     }
 });
 
-app.delete('/tournaments/:id/teams/:teamId', async (req: Request, res: Response) => {
+app.delete('/tournaments/:id/teams/:teamId', authMiddleware, async (req: Request, res: Response) => {
     try {
         await teamService.removeTeamFromTournament(+req.params.id, +req.params.teamId);
     } catch (err) {

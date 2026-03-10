@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:frontend_splatournament_manager/main.dart';
 import 'package:frontend_splatournament_manager/models/team.dart';
-import 'package:http/http.dart' as http;
+import 'package:frontend_splatournament_manager/services/api_client.dart';
 
 class TeamService {
-  final String baseUrl = SplatournamentApp.baseUrl;
 
   Future<List<Team>> getAllTeams() async {
-    final response = await http.get(Uri.parse('$baseUrl/teams'));
+    final response = await ApiClient.get('/teams');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Failed to load teams (${response.statusCode})');
     }
@@ -18,7 +16,7 @@ class TeamService {
   }
 
   Future<Team> getTeamById(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/teams/$id'));
+    final response = await ApiClient.get('/teams/$id');
     if (response.statusCode == HttpStatus.notFound) {
       throw Exception('Team not found');
     }
@@ -33,10 +31,9 @@ class TeamService {
     required String tag,
     String description = '',
   }) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/teams'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'name': name, 'tag': tag, 'description': description}),
+    final response = await ApiClient.post(
+      '/teams',
+      {'name': name, 'tag': tag, 'description': description},
     );
     if (response.statusCode != HttpStatus.created) {
       final body = json.decode(response.body);
@@ -51,14 +48,13 @@ class TeamService {
     String? tag,
     String? description,
   }) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/teams/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'name': ?name,
-        'tag': ?tag,
-        'description': ?description,
-      }),
+    final response = await ApiClient.put(
+      '/teams/$id',
+      {
+        if (name != null) 'name': name,
+        if (tag != null) 'tag': tag,
+        if (description != null) 'description': description,
+      },
     );
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
@@ -67,7 +63,7 @@ class TeamService {
   }
 
   Future<void> deleteTeam(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/teams/$id'));
+    final response = await ApiClient.delete('/teams/$id');
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
       throw Exception(body['error'] ?? 'Failed to delete team');
@@ -75,9 +71,7 @@ class TeamService {
   }
 
   Future<List<Team>> getTeamsByTournament(int tournamentId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/tournaments/$tournamentId/teams'),
-    );
+    final response = await ApiClient.get('/tournaments/$tournamentId/teams');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception(
         'Failed to load teams for tournament (${response.statusCode})',
@@ -88,10 +82,9 @@ class TeamService {
   }
 
   Future<void> registerTeamForTournament(int tournamentId, int teamId) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/tournaments/$tournamentId/teams'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'teamId': teamId}),
+    final response = await ApiClient.post(
+      '/tournaments/$tournamentId/teams',
+      {'teamId': teamId},
     );
     if (response.statusCode == 409) {
       throw Exception('Team is already registered for this tournament');
@@ -103,9 +96,7 @@ class TeamService {
   }
 
   Future<void> removeTeamFromTournament(int tournamentId, int teamId) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/tournaments/$tournamentId/teams/$teamId'),
-    );
+    final response = await ApiClient.delete('/tournaments/$tournamentId/teams/$teamId');
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
       throw Exception(body['error'] ?? 'Failed to remove team from tournament');
@@ -113,9 +104,7 @@ class TeamService {
   }
 
   Future<List<Map<String, dynamic>>> getTournamentsByTeam(int teamId) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/teams/$teamId/tournaments'),
-    );
+    final response = await ApiClient.get('/teams/$teamId/tournaments');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception(
         'Failed to load tournaments for team (${response.statusCode})',

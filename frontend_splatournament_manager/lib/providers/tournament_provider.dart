@@ -3,12 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
-import 'package:http/http.dart' as http;
-
-import '../main.dart';
+import 'package:frontend_splatournament_manager/services/api_client.dart';
 
 class TournamentProvider extends ChangeNotifier {
-  final String baseUrl = SplatournamentApp.baseUrl;
 
   List<Tournament> _availableTournaments = [];
   Future<List<Tournament>>? _initialLoadFuture;
@@ -16,7 +13,7 @@ class TournamentProvider extends ChangeNotifier {
   List<Tournament> get availableTournaments => _availableTournaments;
 
   Future<List<Tournament>> _fetchTournaments() async {
-    final response = await http.get(Uri.parse('$baseUrl/tournaments'));
+    final response = await ApiClient.get('/tournaments');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Failed to load tournaments (${response.statusCode})');
     }
@@ -48,21 +45,15 @@ class TournamentProvider extends ChangeNotifier {
     DateTime registrationStartDate,
     DateTime registrationEndDate,
   ) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/tournaments'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    final response = await ApiClient.post(
+      '/tournaments',
+      {
         'name': name,
         'description': description,
         'maxTeamAmount': maxTeamAmount,
-        //weird date formatting
-        'registrationStartDate': registrationStartDate.toIso8601String().split(
-          'T',
-        )[0],
-        'registrationEndDate': registrationEndDate.toIso8601String().split(
-          'T',
-        )[0],
-      }),
+        'registrationStartDate': registrationStartDate.toIso8601String().split('T')[0],
+        'registrationEndDate': registrationEndDate.toIso8601String().split('T')[0],
+      },
     );
 
     if (response.statusCode != HttpStatus.created) {
