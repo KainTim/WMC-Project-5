@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:frontend_splatournament_manager/main.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  static const String baseUrl = "http://10.0.2.2:3000";
-
+  final String baseUrl = SplatournamentApp.baseUrl;
   Future<Map<String, dynamic>> register(String username, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),

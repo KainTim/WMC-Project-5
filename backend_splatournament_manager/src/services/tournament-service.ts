@@ -17,7 +17,6 @@ export class TournamentService {
                              name              TEXT,
                              description       TEXT,
                              maxTeamAmount     INTEGER,
-                             currentTeamAmount INTEGER,
                              registrationStartDate TEXT,
                              registrationEndDate TEXT
                          )`);
@@ -43,7 +42,7 @@ export class TournamentService {
                                 name: row.name,
                                 description: row.description,
                                 maxTeamAmount: row.maxTeamAmount,
-                                currentTeamAmount: row.currentTeamAmount,
+                                currentTeamAmount: 0,
                                 registrationStartDate: row.registrationStartDate,
                                 registrationEndDate: row.registrationEndDate,
                                 teams: [],
@@ -57,6 +56,7 @@ export class TournamentService {
                                 description: row.teamDescription,
                                 createdAt: row.teamCreatedAt,
                             } as Team);
+                            tournamentsMap.get(row.id)!.currentTeamAmount++;
                         }
                     }
                     resolve(Array.from(tournamentsMap.values()));
@@ -98,6 +98,7 @@ export class TournamentService {
                                 description: row.teamDescription,
                                 createdAt: row.teamCreatedAt,
                             } as Team);
+                            tournament.currentTeamAmount++;
                         }
                     }
                     resolve(tournament);
@@ -108,8 +109,8 @@ export class TournamentService {
 
     addTournament(tournament: Tournament): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            const statement = this.db.prepare('Insert Into Tournaments (name, description, maxTeamAmount, currentTeamAmount, registrationStartDate, registrationEndDate) VALUES (?, ?, ?, ?, ?, ?)')
-            statement.run(tournament.name, tournament.description, tournament.maxTeamAmount, tournament.currentTeamAmount, tournament.registrationStartDate, tournament.registrationEndDate);
+            const statement = this.db.prepare('Insert Into Tournaments (name, description, maxTeamAmount, registrationStartDate, registrationEndDate) VALUES (?, ?, ?, ?, ?)')
+            statement.run(tournament.name, tournament.description, tournament.maxTeamAmount, tournament.registrationStartDate, tournament.registrationEndDate);
             resolve();
         })
     }
@@ -120,7 +121,6 @@ export class TournamentService {
                          Set name              = $name,
                              description       = $description,
                              maxTeamAmount     = $maxTeamAmount,
-                             currentTeamAmount = $currentTeamAmount,
                              registrationStartDate = $registrationStartDate,
                              registrationEndDate = $registrationEndDate
                          where id = $id`, {
@@ -128,7 +128,6 @@ export class TournamentService {
                 $name: updatedTournament.name,
                 $description: updatedTournament.description,
                 $maxTeamAmount: updatedTournament.maxTeamAmount,
-                $currentTeamAmount: updatedTournament.currentTeamAmount,
                 $registrationStartDate: updatedTournament.registrationStartDate,
                 $registrationEndDate: updatedTournament.registrationEndDate,
             });

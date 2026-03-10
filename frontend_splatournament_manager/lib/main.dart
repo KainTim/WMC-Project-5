@@ -3,6 +3,7 @@ import 'package:frontend_splatournament_manager/pages/home_page.dart';
 import 'package:frontend_splatournament_manager/pages/login_page.dart';
 import 'package:frontend_splatournament_manager/pages/settings_page.dart';
 import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
+import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:frontend_splatournament_manager/providers/theme_provider.dart';
 import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => TournamentProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TeamProvider()),
       ],
       child: const SplatournamentApp(),
     ),
@@ -22,6 +24,7 @@ void main() {
 }
 
 class SplatournamentApp extends StatelessWidget {
+  static const String baseUrl = "http://10.0.2.2:3000";
   const SplatournamentApp({super.key});
   @override
   Widget build(BuildContext context) {
@@ -41,12 +44,17 @@ class SplatournamentApp extends StatelessWidget {
     );
   }
 }
+
 var routes = GoRouter(
   initialLocation: '/login',
   routes: [
     GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
-    GoRoute(path: "/", builder: (context, state) => HomePage(),routes: [
-      GoRoute(path: "settings", builder: (context, state) => SettingsPage(),)
-    ])
-  ]
+    GoRoute(
+      path: "/",
+      builder: (context, state) => HomePage(),
+      routes: [
+        GoRoute(path: "settings", builder: (context, state) => SettingsPage()),
+      ],
+    ),
+  ],
 );

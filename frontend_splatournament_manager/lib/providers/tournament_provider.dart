@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:http/http.dart' as http;
 
+import '../main.dart';
+
 class TournamentProvider extends ChangeNotifier {
-  static const String baseUrl = "http://10.0.2.2:3000";
+  final String baseUrl = SplatournamentApp.baseUrl;
 
   List<Tournament> _availableTournaments = [];
   Future<List<Tournament>>? _initialLoadFuture;

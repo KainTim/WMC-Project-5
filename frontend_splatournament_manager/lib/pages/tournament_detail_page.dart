@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
+import 'package:frontend_splatournament_manager/providers/team_provider.dart';
+import 'package:provider/provider.dart';
 
 class TournamentDetailPage extends StatefulWidget {
   final Tournament tournament;
@@ -72,15 +75,89 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
   }
 }
 
-class TournamentTeamsWidget extends StatelessWidget{
-  const TournamentTeamsWidget({super.key, required Tournament tournament});
+class TournamentTeamsWidget extends StatefulWidget {
+  final Tournament tournament;
+
+  const TournamentTeamsWidget({super.key, required this.tournament});
+
+  @override
+  State<TournamentTeamsWidget> createState() => _TournamentTeamsWidgetState();
+}
+
+class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
+  late Future<List<Team>> _teamsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _teamsFuture = Provider.of<TeamProvider>(context, listen: false)
+        .getTeamsByTournament(widget.tournament.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Column( children: [
-        //TODO: Show participating Teams
-        Text("Teams"),
-      ],),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Text(
+              'Registered Teams',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder<List<Team>>(
+              future: _teamsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                final teams = snapshot.data ?? [];
+                if (teams.isEmpty) {
+                  return Center(child: Text('No teams registered yet.'));
+                }
+                return ListView.builder(
+                  itemCount: teams.length,
+                  itemBuilder: (context, index) {
+                    final team = teams[index];
+                    return ListTile(
+                      leading: CircleAvatar(child: Text(team.tag)),
+                      title: Text(team.name),
+                      subtitle: team.description.isNotEmpty
+                          ? Text(team.description)
+                          : null,
+                      trailing: IconButton(
+                        icon: Icon(Icons.remove_circle_outline, color: Colors.red),
+                        onPressed: () async {
+                          try {
+                            await Provider.of<TeamProvider>(context, listen: false)
+                                .removeTeamFromTournament(widget.tournament.id, team.id);
+                            setState(() {
+                              _teamsFuture =
+                                  Provider.of<TeamProvider>(context, listen: false)
+                                      .getTeamsByTournament(widget.tournament.id);
+                            });
+                          } catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to remove team: $e')),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
