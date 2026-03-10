@@ -1,8 +1,8 @@
-import {Tournament} from '../models/tournament';
-import {Team} from '../models/team';
+import { Tournament } from '../models/tournament';
+import { Team } from '../models/team';
 import fs from 'fs';
 import path from 'path';
-import {Database, RunResult} from "sqlite3";
+import { Database, RunResult } from "sqlite3";
 
 export class TournamentService {
     private csvFilename = 'csv/tournaments.csv';
@@ -149,8 +149,8 @@ export class TournamentService {
             const entries = data.split('\n');
             entries.shift();
             const statement = this.db.prepare(`INSERT INTO Tournaments
-                                                   (name, description, maxTeamAmount, currentTeamAmount, registrationStartDate, registrationEndDate)
-                                               VALUES (?, ?, ?, ?, ?, ?)`);
+                                                   (name, description, maxTeamAmount, registrationStartDate, registrationEndDate)
+                                               VALUES (?, ?, ?, ?, ?)`);
             entries.forEach(line => {
                 if (line) {
                     const parts = line.split(',');
@@ -159,11 +159,11 @@ export class TournamentService {
                         name: parts[0].trim(),
                         description: parts[1].trim(),
                         maxTeamAmount: +parts[2],
-                        currentTeamAmount: +parts[3],
+                        currentTeamAmount: 0,
                         registrationStartDate: parts[4].trim(),
                         registrationEndDate: parts[5].trim()
                     } as Tournament;
-                    statement.run(tournament.name, tournament.description, tournament.maxTeamAmount, tournament.currentTeamAmount, tournament.registrationStartDate, tournament.registrationEndDate);
+                    statement.run(tournament.name, tournament.description, tournament.maxTeamAmount, tournament.registrationStartDate, tournament.registrationEndDate);
                     console.log(tournament)
                 }
             });
