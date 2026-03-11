@@ -49,12 +49,30 @@ class TeamListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final memberCountText = team.memberCount != null 
+        ? '${team.memberCount}/4 members'
+        : 'No members';
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(child: Text(team.tag)),
         title: Text(team.name),
-        subtitle: Text(team.description.isEmpty ? 'No description' : team.description),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(team.description.isEmpty ? 'No description' : team.description),
+            const SizedBox(height: 4),
+            Text(
+              memberCountText,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        isThreeLine: true,
         trailing: PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           itemBuilder: (context) => [

@@ -24,3 +24,9 @@ Folgende Dateien wurden in diesem Prompt verändert:
     - backend_splatournament_manager/src/services/team-service.ts
     - frontend_splatournament_manager/lib/models/team.dart
     - frontend_splatournament_manager/lib/pages/teams_page.dart
+
+- Remove the teams_page and add the member count display to the list views.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/teams_page.dart (gelöscht)
+    - frontend_splatournament_manager/lib/widgets/teams_list_widget.dart
+    - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
