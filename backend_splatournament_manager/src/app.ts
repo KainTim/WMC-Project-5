@@ -88,6 +88,9 @@ app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
     }
     try {
         const team = await teamService.addTeam({name, tag, description: description ?? ''});
+        // @ts-ignore
+        const userId = req.user.id;
+        await teamService.addTeamMember(team.id, userId, 'owner');
         res.status(201).send(team);
     } catch (err) {
         console.log(err);
@@ -146,6 +149,60 @@ app.delete('/tournaments/:id/teams/:teamId', authMiddleware, async (req: Request
 app.get('/teams/:id/tournaments', async (req: Request, res: Response) => {
     const entries = await teamService.getTournamentsByTeamId(+req.params.id);
     res.send(entries);
+});
+
+app.get('/users/me/teams', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.id;
+        const teams = await teamService.getTeamsByUserId(userId);
+        res.send(teams);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to get user teams'});
+    }
+});
+
+app.post('/teams/:id/members', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.id;
+        const teamId = +req.params.id;
+        
+        const isInTeam = await teamService.isUserInTeam(teamId, userId);
+        if (isInTeam) {
+            return res.status(409).send({error: 'User is already a member of this team'});
+        }
+        
+        const member = await teamService.addTeamMember(teamId, userId, 'member');
+        res.status(201).send(member);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to join team'});
+    }
+});
+
+app.delete('/teams/:id/members/me', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.id;
+        const teamId = +req.params.id;
+        await teamService.removeTeamMember(teamId, userId);
+        res.status(200).send({message: 'Left team successfully'});
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to leave team'});
+    }
+});
+
+app.get('/teams/:id/members', async (req: Request, res: Response) => {
+    try {
+        const members = await teamService.getTeamMembers(+req.params.id);
+        res.send(members);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to get team members'});
+    }
 });
 
 app.post('/register', async (req: Request, res: Response) => {

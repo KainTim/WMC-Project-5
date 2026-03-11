@@ -13,3 +13,11 @@ export interface TournamentTeam {
   registeredAt: string;
 }
 
+export interface TeamMember {
+  id: number;
+  teamId: number;
+  userId: number;
+  role: 'owner' | 'member';
+  joinedAt: string;
+}
+

@@ -113,4 +113,41 @@ class TeamService {
     final List<dynamic> list = json.decode(response.body);
     return list.cast<Map<String, dynamic>>();
   }
+
+  Future<List<Team>> getUserTeams() async {
+    final response = await ApiClient.get('/users/me/teams');
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load user teams (${response.statusCode})');
+    }
+    final List<dynamic> list = json.decode(response.body);
+    return list.map((j) => Team.fromJson(j as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> joinTeam(int teamId) async {
+    final response = await ApiClient.post('/teams/$teamId/members', {});
+    if (response.statusCode == 409) {
+      throw Exception('You are already a member of this team');
+    }
+    if (response.statusCode != HttpStatus.created) {
+      final body = json.decode(response.body);
+      throw Exception(body['error'] ?? 'Failed to join team');
+    }
+  }
+
+  Future<void> leaveTeam(int teamId) async {
+    final response = await ApiClient.delete('/teams/$teamId/members/me');
+    if (response.statusCode != HttpStatus.ok) {
+      final body = json.decode(response.body);
+      throw Exception(body['error'] ?? 'Failed to leave team');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getTeamMembers(int teamId) async {
+    final response = await ApiClient.get('/teams/$teamId/members');
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to load team members (${response.statusCode})');
+    }
+    final List<dynamic> list = json.decode(response.body);
+    return list.cast<Map<String, dynamic>>();
+  }
 }

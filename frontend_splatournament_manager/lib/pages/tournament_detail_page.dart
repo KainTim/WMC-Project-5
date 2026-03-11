@@ -16,6 +16,90 @@ class TournamentDetailPage extends StatefulWidget {
 class _TournamentDetailPageState extends State<TournamentDetailPage> {
   bool isShowingTeams = false;
 
+  void _showJoinTeamDialog(BuildContext context, int tournamentId) async {
+    final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    
+    try {
+      final teams = await teamProvider.getUserTeams();
+      
+      if (!context.mounted) return;
+      
+      if (teams.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('You are not a member of any team. Join or create a team first!')),
+        );
+        return;
+      }
+
+      final selectedTeam = await showDialog<Team>(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('Select Your Team'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: teams.length,
+                itemBuilder: (context, index) {
+                  final team = teams[index];
+                  return ListTile(
+                    leading: CircleAvatar(child: Text(team.tag)),
+                    title: Text(team.name),
+                    subtitle: team.description.isNotEmpty 
+                        ? Text(team.description) 
+                        : null,
+                    onTap: () => Navigator.pop(dialogContext, team),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (selectedTeam != null && context.mounted) {
+        try {
+          await teamProvider.registerTeamForTournament(
+            tournamentId,
+            selectedTeam.id,
+          );
+          
+          if (!context.mounted) return;
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${selectedTeam.name} joined the tournament!'),
+            ),
+          );
+          
+          // Refresh teams list if currently showing
+          if (isShowingTeams) {
+            setState(() {});
+          }
+        } catch (e) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to join: ${e.toString().replaceAll('Exception: ', '')}'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load your teams: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,13 +142,9 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
               child: ElevatedButton(
-                child: Text("Enter"),
+                child: Text("Join with Team"),
                 onPressed: () {
-                  //TODO: Backend Call
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text("tournament entered")));
+                  _showJoinTeamDialog(context, widget.tournament.id);
                 },
               ),
             ),

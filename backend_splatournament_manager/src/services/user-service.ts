@@ -90,4 +90,17 @@ export class UserService {
             );
         });
     }
+
+    getUserByUsername(username: string): Promise<User | undefined> {
+        return new Promise((resolve, reject) => {
+            this.db.get(
+                'SELECT id, username FROM Users WHERE username = ?',
+                [username],
+                (err: Error | null, user: User | undefined) => {
+                    if (err) return reject(err);
+                    resolve(user);
+                }
+            );
+        });
+    }
 }

@@ -1,4 +1,4 @@
-import { Team, TournamentTeam } from '../models/team';
+import { Team, TournamentTeam, TeamMember } from '../models/team';
 import { Database, RunResult } from 'sqlite3';
 
 export class TeamService {
@@ -25,6 +25,18 @@ export class TeamService {
                        FOREIGN KEY (tournamentId) REFERENCES Tournaments (id) ON DELETE CASCADE,
                        FOREIGN KEY (teamId) REFERENCES Teams (id) ON DELETE CASCADE,
                        UNIQUE (tournamentId, teamId)
+                   )`);
+
+      this.db.run(`CREATE TABLE IF NOT EXISTS TeamMembers
+                   (
+                       id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                       teamId   INTEGER NOT NULL,
+                       userId   INTEGER NOT NULL,
+                       role     TEXT    NOT NULL DEFAULT 'member',
+                       joinedAt TEXT    NOT NULL DEFAULT (datetime('now')),
+                       FOREIGN KEY (teamId) REFERENCES Teams (id) ON DELETE CASCADE,
+                       FOREIGN KEY (userId) REFERENCES Users (id) ON DELETE CASCADE,
+                       UNIQUE (teamId, userId)
                    )`);
     });
   }
@@ -141,6 +153,79 @@ export class TeamService {
         (err: Error | null) => {
           if (err) return reject(err);
           resolve();
+        }
+      );
+    });
+  }
+
+  addTeamMember(teamId: number, userId: number, role: 'owner' | 'member' = 'member'): Promise<TeamMember> {
+    return new Promise<TeamMember>((resolve, reject) => {
+      const stmt = this.db.prepare(`INSERT INTO TeamMembers (teamId, userId, role) VALUES (?, ?, ?)`);
+      stmt.run(teamId, userId, role, function (this: RunResult, err: Error | null) {
+        if (err) return reject(err);
+        resolve({
+          id: (this as any).lastID,
+          teamId,
+          userId,
+          role,
+          joinedAt: new Date().toISOString(),
+        });
+      });
+      stmt.finalize();
+    });
+  }
+
+  removeTeamMember(teamId: number, userId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.db.run(
+        `DELETE FROM TeamMembers WHERE teamId = ? AND userId = ?`,
+        [teamId, userId],
+        (err: Error | null) => {
+          if (err) return reject(err);
+          resolve();
+        }
+      );
+    });
+  }
+
+  getTeamsByUserId(userId: number): Promise<Team[]> {
+    return new Promise<Team[]>((resolve, reject) => {
+      this.db.all(
+        `SELECT t.*, tm.role, tm.joinedAt FROM Teams t
+         INNER JOIN TeamMembers tm ON t.id = tm.teamId
+         WHERE tm.userId = ?`,
+        [userId],
+        (err: Error | null, rows: Team[]) => {
+          if (err) return reject(err);
+          resolve(rows);
+        }
+      );
+    });
+  }
+
+  getTeamMembers(teamId: number): Promise<TeamMember[]> {
+    return new Promise<TeamMember[]>((resolve, reject) => {
+      this.db.all(
+        `SELECT tm.*, u.username FROM TeamMembers tm
+         INNER JOIN Users u ON tm.userId = u.id
+         WHERE tm.teamId = ?`,
+        [teamId],
+        (err: Error | null, rows: TeamMember[]) => {
+          if (err) return reject(err);
+          resolve(rows);
+        }
+      );
+    });
+  }
+
+  isUserInTeam(teamId: number, userId: number): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.db.get(
+        `SELECT COUNT(*) as count FROM TeamMembers WHERE teamId = ? AND userId = ?`,
+        [teamId, userId],
+        (err: Error | null, row: any) => {
+          if (err) return reject(err);
+          resolve(row.count > 0);
         }
       );
     });

@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/models/team.dart';
+import 'package:frontend_splatournament_manager/providers/team_provider.dart';
+import 'package:provider/provider.dart';
+
+class MyTeamsWidget extends StatefulWidget {
+  const MyTeamsWidget({super.key});
+
+  @override
+  State<MyTeamsWidget> createState() => _MyTeamsWidgetState();
+}
+
+class _MyTeamsWidgetState extends State<MyTeamsWidget> {
+  late Future<List<Team>> _myTeamsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMyTeams();
+  }
+
+  void _loadMyTeams() {
+    _myTeamsFuture = Provider.of<TeamProvider>(context, listen: false).getUserTeams();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Team>>(
+      future: _myTeamsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final teams = snapshot.data ?? [];
+        if (teams.isEmpty) {
+          return const Center(
+            child: Text('You are not in any teams yet\nJoin teams from the All Teams tab'),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: teams.length,
+          itemBuilder: (context, index) => _buildTeamCard(teams[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildTeamCard(Team team) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: CircleAvatar(child: Text(team.tag)),
+        title: Text(team.name),
+        subtitle: Text(team.description.isEmpty ? 'No description' : team.description),
+        trailing: IconButton(
+          icon: const Icon(Icons.logout, color: Colors.red),
+          onPressed: () => _leaveTeam(team),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _leaveTeam(Team team) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Leave Team?'),
+        content: Text('Leave "${team.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Leave', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      try {
+        await Provider.of<TeamProvider>(context, listen: false).leaveTeam(team.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Left team')),
+          );
+          _loadMyTeams();
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      }
+    }
+  }
+}
