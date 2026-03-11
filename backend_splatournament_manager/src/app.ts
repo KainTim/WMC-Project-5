@@ -86,6 +86,9 @@ app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
     if (!name || !tag) {
         return res.status(400).send({error: 'name and tag are required'});
     }
+    if (tag.length > 3) {
+        return res.status(400).send({error: 'tag must be at most 3 characters'});
+    }
     try {
         const team = await teamService.addTeam({name, tag, description: description ?? ''});
         // @ts-ignore
@@ -99,6 +102,10 @@ app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
 });
 
 app.put('/teams/:id', authMiddleware, async (req: Request, res: Response) => {
+    const {tag} = req.body;
+    if (tag && tag.length > 3) {
+        return res.status(400).send({error: 'tag must be at most 3 characters'});
+    }
     try {
         await teamService.updateTeam(+req.params.id, req.body);
     } catch (err) {

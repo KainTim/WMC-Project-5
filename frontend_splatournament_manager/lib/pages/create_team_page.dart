@@ -109,13 +109,16 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
                 controller: _tagController,
                 decoration: const InputDecoration(
                   labelText: 'Team Tag',
-                  hintText: 'Enter team tag (e.g., ABC)',
+                  hintText: 'Enter team tag (max 3 characters)',
                 ),
-                maxLength: 5,
+                maxLength: 3,
                 textCapitalization: TextCapitalization.characters,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Team tag is required';
+                  }
+                  if (value.length > 3) {
+                    return 'Tag must be at most 3 characters';
                   }
                   return null;
                 },
