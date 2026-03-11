@@ -19,4 +19,8 @@ Folgende Dateien wurden in diesem Prompt verändert:
     - tournament_detail_page.dart
     - teams_page.dart (erstellt, aber nicht verwendet)
 
-- 
+- Ensure a team can only have a maximum of four members, also show the member count in the team list.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/services/team-service.ts
+    - frontend_splatournament_manager/lib/models/team.dart
+    - frontend_splatournament_manager/lib/pages/teams_page.dart

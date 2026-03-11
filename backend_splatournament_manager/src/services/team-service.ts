@@ -48,10 +48,16 @@ export class TeamService {
 
   getAllTeams(): Promise<Team[]> {
     return new Promise<Team[]>((resolve, reject) => {
-      this.db.all(`SELECT * FROM Teams`, (err: Error | null, rows: Team[]) => {
-        if (err) return reject(err);
-        resolve(rows);
-      });
+      this.db.all(
+        `SELECT t.*, COUNT(tm.id) as memberCount 
+         FROM Teams t 
+         LEFT JOIN TeamMembers tm ON t.id = tm.teamId 
+         GROUP BY t.id`,
+        (err: Error | null, rows: Team[]) => {
+          if (err) return reject(err);
+          resolve(rows);
+        }
+      );
     });
   }
 
@@ -165,18 +171,30 @@ export class TeamService {
 
   addTeamMember(teamId: number, userId: number, role: 'owner' | 'member' = 'member'): Promise<TeamMember> {
     return new Promise<TeamMember>((resolve, reject) => {
-      const stmt = this.db.prepare(`INSERT INTO TeamMembers (teamId, userId, role) VALUES (?, ?, ?)`);
-      stmt.run(teamId, userId, role, function (this: RunResult, err: Error | null) {
-        if (err) return reject(err);
-        resolve({
-          id: (this as any).lastID,
-          teamId,
-          userId,
-          role,
-          joinedAt: new Date().toISOString(),
-        });
-      });
-      stmt.finalize();
+      // First check if team already has 4 members
+      this.db.get(
+        `SELECT COUNT(*) as count FROM TeamMembers WHERE teamId = ?`,
+        [teamId],
+        (err: Error | null, row: any) => {
+          if (err) return reject(err);
+          if (row.count >= 4) {
+            return reject(new Error('Team already has maximum of 4 members'));
+          }
+          
+          const stmt = this.db.prepare(`INSERT INTO TeamMembers (teamId, userId, role) VALUES (?, ?, ?)`);
+          stmt.run(teamId, userId, role, function (this: RunResult, err: Error | null) {
+            if (err) return reject(err);
+            resolve({
+              id: (this as any).lastID,
+              teamId,
+              userId,
+              role,
+              joinedAt: new Date().toISOString(),
+            });
+          });
+          stmt.finalize();
+        }
+      );
     });
   }
 

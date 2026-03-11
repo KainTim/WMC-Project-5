@@ -4,6 +4,7 @@ class Team {
   final String tag;
   final String description;
   final String createdAt;
+  final int? memberCount;
 
   Team({
     required this.id,
@@ -11,6 +12,7 @@ class Team {
     required this.tag,
     required this.description,
     required this.createdAt,
+    this.memberCount,
   });
 
   factory Team.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Team {
       tag: json['tag'] as String,
       description: (json['description'] as String?) ?? '',
       createdAt: (json['createdAt'] as String?) ?? '',
+      memberCount: json['memberCount'] as int?,
     );
   }
 
@@ -30,6 +33,7 @@ class Team {
       'tag': tag,
       'description': description,
       'createdAt': createdAt,
+      if (memberCount != null) 'memberCount': memberCount,
     };
   }
 }
