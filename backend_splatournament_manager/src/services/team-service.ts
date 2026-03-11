@@ -1,8 +1,11 @@
 import { Team, TournamentTeam, TeamMember } from '../models/team';
 import { Database, RunResult } from 'sqlite3';
+import fs from 'fs';
+import path from 'path';
 
 export class TeamService {
   private db: Database;
+  private csvFilename = 'csv/teams.csv';
 
   constructor(db: Database) {
     this.db = db;
@@ -38,6 +41,8 @@ export class TeamService {
                        FOREIGN KEY (userId) REFERENCES Users (id) ON DELETE CASCADE,
                        UNIQUE (teamId, userId)
                    )`);
+
+      this.seedDb();
     });
   }
 
@@ -229,6 +234,37 @@ export class TeamService {
         }
       );
     });
+  }
+
+  private seedDb() {
+    const csvPath = path.join(process.cwd(), "dist", this.csvFilename);
+    if (fs.existsSync(csvPath)) {
+      this.db.get(`SELECT COUNT(*) as count FROM Teams`, (err: Error | null, row: any) => {
+        if (err) {
+          console.error('Error checking Teams table:', err);
+          return;
+        }
+        if (row.count === 0) {
+          fs.readFile(csvPath, 'utf8', (err, data) => {
+            if (err) {
+              console.error('Error reading teams CSV:', err);
+              return;
+            }
+            const lines = data.split('\n');
+            lines.shift();
+            const stmt = this.db.prepare(`INSERT INTO Teams (name, tag, description) VALUES (?, ?, ?)`);
+            lines.forEach((line: string) => {
+              const [name, tag, description] = line.split(',');
+              if (name && tag) {
+                stmt.run([name.trim(), tag.trim(), description?.trim() || '']);
+              }
+            });
+            stmt.finalize();
+            console.log('Teams seeded successfully');
+          });
+        }
+      });
+    }
   }
 }
 

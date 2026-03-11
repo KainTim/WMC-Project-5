@@ -19,7 +19,7 @@ Document all AI prompts and track which files were modified as a result of each 
 ### Prompt Entry Format
 Each prompt entry should follow this structure:
 
-1. **Prompt text**: Write the actual prompt as a bullet point while rewriting it so it's nicer to read but still closely resembles the original (`-`)
+1. **Prompt text**: Write the actual prompt as a bullet point while only fixing grammatical errors (`-`)
 2. **Separator**: Add `<br><br>` after the prompt text
 3. **File changes header**: Add the line `Folgende Dateien wurden in diesem Prompt verändert:`
 4. **File list**: List all affected files as indented sub-bullets (4 spaces + `-`)
