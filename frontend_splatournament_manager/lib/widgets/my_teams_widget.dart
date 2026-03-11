@@ -56,27 +56,17 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
     final memberCountText = team.memberCount != null 
         ? '${team.memberCount}/4 members'
         : 'No members';
+    final description = team.description.isEmpty ? 'No description' : team.description;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(child: Text(team.tag)),
         title: Text(team.name),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(team.description.isEmpty ? 'No description' : team.description),
-            const SizedBox(height: 4),
-            Text(
-              memberCountText,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        subtitle: Text(
+          '$description\n$memberCountText',
+          style: const TextStyle(fontSize: 14),
         ),
-        isThreeLine: true,
         trailing: IconButton(
           icon: const Icon(Icons.logout, color: Colors.red),
           onPressed: () => _leaveTeam(team),

@@ -1,6 +1,6 @@
 # Prompts
 
-Folgende Prompts wurden auf Englisch geschrieben.
+Folgende Prompts wurden auf Englisch geschrieben. Verwendetes Model: Claude Sonnet 4.5
 
 ## 11.03.2026
 
@@ -28,5 +28,10 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Remove the teams_page and add the member count display to the list views.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/pages/teams_page.dart (gelöscht)
+    - frontend_splatournament_manager/lib/widgets/teams_list_widget.dart
+    - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
+
+- Center the team avatar vertically in the list views.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/teams_list_widget.dart
     - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
