@@ -4,13 +4,19 @@ import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:frontend_splatournament_manager/pages/tournament_detail_page.dart';
 import 'package:provider/provider.dart';
 
-class MyTournamentsCarousel extends StatelessWidget {
+class MyTournamentsCarousel extends StatefulWidget {
   const MyTournamentsCarousel({super.key});
 
   @override
+  State<MyTournamentsCarousel> createState() => _MyTournamentsCarouselState();
+}
+
+class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
+  @override
   Widget build(BuildContext context) {
+    final teamProvider = Provider.of<TeamProvider>(context);    
     return FutureBuilder<List<Map<String, dynamic>>>(
-      future: Provider.of<TeamProvider>(context, listen: false).getMyTeamsTournaments(),
+      future: teamProvider.getMyTeamsTournaments(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(

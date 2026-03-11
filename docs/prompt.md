@@ -67,3 +67,7 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Add navigation to tournament details in the carousel.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart
+
+- Fix the carousel not reloading when the reload button is pressed or when a tournament is joined.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart
