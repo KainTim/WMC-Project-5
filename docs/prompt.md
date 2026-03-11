@@ -44,3 +44,8 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Use the first three letters of the username as the avatar for the profile and remove the team name input in the settings.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/profile_widget.dart
+
+- Save the theme preferences so they persist across restarts.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/pubspec.yaml
+    - frontend_splatournament_manager/lib/providers/theme_provider.dart
