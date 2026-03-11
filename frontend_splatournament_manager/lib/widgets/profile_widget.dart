@@ -10,31 +10,29 @@ class ProfileWidget extends StatefulWidget {
 }
 
 class _ProfileWidgetState extends State<ProfileWidget> {
-  final TextEditingController teamController = TextEditingController(
-    text: 'Team Name',
-  );
-
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, provider, child) {
+        final username = provider.username ?? "Unknown User";
+        final avatarText = username.length >= 3 
+            ? username.substring(0, 3).toUpperCase() 
+            : username.toUpperCase();
+        
         return Column(
           children: [
             SizedBox(
               height: 128,
               width: 128,
               child: CircleAvatar(
-                backgroundImage: NetworkImage(
-                  "https://i.postimg.cc/0jqKB6mS/Profile-Image.png",
+                child: Text(
+                  avatarText,
+                  style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             SizedBox(height: 8),
-            Text(provider.username??"Unknown User", style: TextStyle(fontSize: 36)),
-            Container(
-              margin: EdgeInsets.fromLTRB(48, 8, 48, 0),
-              child: TextFormField(controller: teamController),
-            ),
+            Text(username, style: TextStyle(fontSize: 36)),
           ],
         );
       },
