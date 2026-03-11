@@ -49,3 +49,7 @@ Folgende Dateien wurden in diesem Prompt verändert:
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/pubspec.yaml
     - frontend_splatournament_manager/lib/providers/theme_provider.dart
+
+- Implement auth-aware router to keep users logged in after app restart.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/main.dart

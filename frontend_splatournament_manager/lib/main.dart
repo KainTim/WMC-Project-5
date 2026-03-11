@@ -45,8 +45,25 @@ class SplatournamentApp extends StatelessWidget {
   }
 }
 
-var routes = GoRouter(
+final routes = GoRouter(
   initialLocation: '/login',
+  redirect: (context, state) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.checkAuthStatus();
+    
+    final isLoggedIn = authProvider.isLoggedIn;
+    final isGoingToLogin = state.matchedLocation == '/login';
+    // redirect to login 
+    if (!isLoggedIn && !isGoingToLogin) {
+      return '/login';
+    }
+    //already logged in
+    if (isLoggedIn && isGoingToLogin) {
+      return '/';
+    }
+    
+    return null;
+  },
   routes: [
     GoRoute(path: "/login", builder: (context, state) => const LoginPage()),
     GoRoute(
