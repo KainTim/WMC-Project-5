@@ -7,11 +7,11 @@ const filePath = path.join(process.cwd(), 'request_logs.txt');
 const router = express.Router();
 
 router.use((req, res, next) => {
-    const log = `[${new Date().toLocaleString()}] ${req.method} ${req.url}\n`;
+    const log = `\n[${new Date().toLocaleString()}] ${req.method} ${req.url}`;
     console.log(log);
 
     fs.appendFile(filePath, log, (err) => {
-        if (err) console.error("Request Failed", err);
+        if (err) console.error("Writing to log failed", err);
     });
 
     next();

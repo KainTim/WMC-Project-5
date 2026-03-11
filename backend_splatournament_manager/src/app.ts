@@ -6,9 +6,10 @@ import {TournamentService} from './services/tournament-service';
 import {UserService} from './services/user-service';
 import {TeamService} from './services/team-service';
 import {authMiddleware} from './middlewares/auth-middleware';
-import router from './middlewares/logger';
+import loggingMiddleware from './middlewares/logger';
 import {Database} from 'sqlite3';
 import fs from "fs";
+import { log } from 'console';
 
 
 const dbFilename = 'tournaments.sqlite';
@@ -24,7 +25,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(bodyParser.json());
-app.use(router);
+app.use(loggingMiddleware);
 
 app.get('/tournaments', async (req: Request, res: Response) => {
     const tournaments = await tournamentService.getAllTournaments();
