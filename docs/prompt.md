@@ -53,3 +53,17 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Implement auth-aware router to keep users logged in after app restart.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/main.dart
+
+- Create a carousel on the homepage that shows all the tournaments that one of your teams is participating in.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/providers/team_provider.dart
+    - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart (neu erstellt)
+    - frontend_splatournament_manager/lib/pages/home_page.dart
+
+- Fix getTournamentsByTeam endpoint to return full Tournament objects instead of TournamentTeam objects.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/services/team-service.ts (changed return type from any[] to Tournament[])
+
+- Add navigation to tournament details in the carousel.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart

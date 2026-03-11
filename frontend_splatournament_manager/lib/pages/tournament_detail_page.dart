@@ -104,7 +104,7 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tournament"),
+        title: Text(widget.tournament.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
         backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(180),
         elevation: 3,
         actions: [

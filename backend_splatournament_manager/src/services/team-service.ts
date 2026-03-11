@@ -1,4 +1,5 @@
 import { Team, TournamentTeam, TeamMember } from '../models/team';
+import { Tournament } from '../models/tournament';
 import { Database, RunResult } from 'sqlite3';
 import fs from 'fs';
 import path from 'path';
@@ -125,12 +126,16 @@ export class TeamService {
     });
   }
 
-  getTournamentsByTeamId(teamId: number): Promise<TournamentTeam[]> {
-    return new Promise<TournamentTeam[]>((resolve, reject) => {
+  getTournamentsByTeamId(teamId: number): Promise<Tournament[]> {
+    return new Promise<Tournament[]>((resolve, reject) => {
       this.db.all(
-        `SELECT * FROM TournamentTeams WHERE teamId = ?`,
+        `SELECT t.*, 
+                (SELECT COUNT(*) FROM TournamentTeams WHERE tournamentId = t.id) as currentTeamAmount
+         FROM Tournaments t
+         INNER JOIN TournamentTeams tt ON t.id = tt.tournamentId
+         WHERE tt.teamId = ?`,
         [teamId],
-        (err: Error | null, rows: TournamentTeam[]) => {
+        (err: Error | null, rows: Tournament[]) => {
           if (err) return reject(err);
           resolve(rows);
         }

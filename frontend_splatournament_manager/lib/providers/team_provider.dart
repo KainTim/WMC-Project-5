@@ -88,5 +88,21 @@ class TeamProvider extends ChangeNotifier {
   Future<List<Map<String, dynamic>>> getTeamMembers(int teamId) {
     return _teamService.getTeamMembers(teamId);
   }
+
+  Future<List<Map<String, dynamic>>> getMyTeamsTournaments() async {
+    final userTeams = await getUserTeams();
+    final Set<Map<String, dynamic>> tournamentsSet = {};
+    
+    for (final team in userTeams) {
+      try {
+        final tournaments = await _teamService.getTournamentsByTeam(team.id);
+        tournamentsSet.addAll(tournaments);
+      } catch (e) {
+        // If a team has no tournaments, continue with others
+      }
+    }
+    
+    return tournamentsSet.toList();
+  }
 }
 

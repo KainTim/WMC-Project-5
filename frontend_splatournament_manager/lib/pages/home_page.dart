@@ -4,6 +4,7 @@ import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
 import 'package:frontend_splatournament_manager/widgets/teams_list_widget.dart';
 import 'package:frontend_splatournament_manager/widgets/my_teams_widget.dart';
+import 'package:frontend_splatournament_manager/widgets/my_tournaments_carousel.dart';
 import 'package:frontend_splatournament_manager/pages/create_tournament_page.dart';
 import 'package:frontend_splatournament_manager/pages/create_team_page.dart';
 import 'package:go_router/go_router.dart';
@@ -91,9 +92,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         index: _selectedIndex,
         children: [
           // Tournaments View
-          Container(
-            padding: const EdgeInsets.fromLTRB(0, 12, 0, 36),
-            child: Column(children: [const Spacer(), const AvailableTournamentList()]),
+          Column(
+            children: [
+              const MyTournamentsCarousel(),
+              const Expanded(child: AvailableTournamentList()),
+            ],
           ),
           // Teams View with tabs
           TabBarView(
