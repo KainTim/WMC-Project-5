@@ -95,3 +95,8 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Only allow entering a tournament if the registration period is open currently.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart
+
+- Add the ongoing view where teams are displayed in a bracket layout: single elimination, supporting 2/4/8 teams with horizontally scrollable rounds connected by bracket lines.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart (neu erstellt)
+    - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart

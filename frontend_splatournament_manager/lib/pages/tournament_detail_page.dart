@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
+import 'package:frontend_splatournament_manager/pages/tournament_bracket_page.dart';
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -322,10 +323,12 @@ class TournamentContentWidget extends StatelessWidget {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          //TODO: Redirect to Ongoing View
-                          ScaffoldMessenger.of(context).clearSnackBars();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("ongoing clicked")),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TournamentBracketPage(tournament: tournament),
+                            ),
                           );
                         },
                         child: Text("View ongoing"),
