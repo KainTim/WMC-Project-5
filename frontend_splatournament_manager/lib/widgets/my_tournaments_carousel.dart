@@ -32,7 +32,39 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
         final tournaments = snapshot.data ?? [];
         
         if (tournaments.isEmpty) {
-          return const SizedBox.shrink();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  'My Tournaments',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(
+                height: 150,
+                child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  elevation: 4,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.emoji_events_outlined, size: 48, color: Colors.grey),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'No tournaments found',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          );
         }
 
         return Column(

@@ -71,3 +71,9 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Fix the carousel not reloading when the reload button is pressed or when a tournament is joined.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart
+
+## 12.03.2026
+
+- Show a placeholder in the carousel if no tournaments were found.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart

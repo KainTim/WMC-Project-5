@@ -1,6 +1,6 @@
 ---
 description: Instructions for documenting prompts and file changes in docs/prompt.md
-applyTo: 'docs/prompt.md' # Auto-apply when docs/prompt.md is involved
+applyTo: '**'
 ---
 
 # Writing Prompts to docs/prompt.md
