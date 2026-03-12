@@ -100,3 +100,13 @@ Folgende Dateien wurden in diesem Prompt verändert:
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart (neu erstellt)
     - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart
+
+- add the ability to progress in a tournament<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/models/match.ts (neu erstellt)
+    - backend_splatournament_manager/src/services/match-service.ts (neu erstellt)
+    - backend_splatournament_manager/src/app.ts
+    - frontend_splatournament_manager/lib/models/match.dart (neu erstellt)
+    - frontend_splatournament_manager/lib/providers/match_provider.dart (neu erstellt)
+    - frontend_splatournament_manager/lib/main.dart
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart

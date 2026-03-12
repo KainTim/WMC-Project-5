@@ -5,6 +5,7 @@ import 'dotenv/config';
 import {TournamentService} from './services/tournament-service';
 import {UserService} from './services/user-service';
 import {TeamService} from './services/team-service';
+import {MatchService} from './services/match-service';
 import {authMiddleware} from './middlewares/auth-middleware';
 import loggingMiddleware from './middlewares/logger';
 import {Database} from 'sqlite3';
@@ -21,6 +22,7 @@ const db = new Database(dbFilename);
 const tournamentService = new TournamentService(db);
 const userService = new UserService(db);
 const teamService = new TeamService(db);
+const matchService = new MatchService(db);
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -66,6 +68,58 @@ app.delete('/tournaments/:id', authMiddleware, async (req: Request, res: Respons
         return res.status(400).send({error: 'Failed to delete Tournament'});
     }
     res.status(200).send({message: 'Tournament deleted successfully'});
+});
+
+app.post('/tournaments/:id/bracket', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const tournamentId = +req.params.id;
+        const teams = await teamService.getTeamsByTournamentId(tournamentId);
+        const teamIds = teams.map(team => team.id);
+        
+        if (teamIds.length < 2) {
+            return res.status(400).send({error: 'At least 2 teams are required to initialize bracket'});
+        }
+        
+        await matchService.initializeBracket(tournamentId, teamIds);
+        res.status(201).send({message: 'Bracket initialized successfully'});
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to initialize bracket'});
+    }
+});
+
+app.get('/tournaments/:id/matches', async (req: Request, res: Response) => {
+    try {
+        const matches = await matchService.getMatchesByTournament(+req.params.id);
+        res.send(matches);
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to get matches'});
+    }
+});
+
+app.put('/matches/:id/winner', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const {winnerId} = req.body;
+        if (!winnerId) {
+            return res.status(400).send({error: 'winnerId is required'});
+        }
+        await matchService.setMatchWinner(+req.params.id, +winnerId);
+        res.status(200).send({message: 'Winner set successfully'});
+    } catch (err: any) {
+        console.log(err);
+        res.status(400).send({error: err.message || 'Failed to set winner'});
+    }
+});
+
+app.delete('/matches/:id/winner', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        await matchService.resetMatch(+req.params.id);
+        res.status(200).send({message: 'Match reset successfully'});
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({error: 'Failed to reset match'});
+    }
 });
 
 app.get('/teams', async (req: Request, res: Response) => {

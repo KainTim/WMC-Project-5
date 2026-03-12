@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/models/match.dart';
 import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
+import 'package:frontend_splatournament_manager/providers/match_provider.dart';
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:provider/provider.dart';
 
-class TournamentBracketPage extends StatelessWidget {
+class TournamentBracketPage extends StatefulWidget {
   final Tournament tournament;
 
   const TournamentBracketPage({super.key, required this.tournament});
 
+  @override
+  State<TournamentBracketPage> createState() => _TournamentBracketPageState();
+}
+
+class _TournamentBracketPageState extends State<TournamentBracketPage> {
   int _bracketSize(int n) {
     if (n <= 2) return 2;
     if (n <= 4) return 4;
@@ -21,14 +28,95 @@ class TournamentBracketPage extends StatelessWidget {
     return 4;
   }
 
+  Future<void> _initializeBracket() async {
+    final matchProvider = Provider.of<MatchProvider>(context, listen: false);
+    try {
+      await matchProvider.initializeBracket(widget.tournament.id);
+      if (mounted) {
+        setState(() {});
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bracket initialized successfully')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to initialize bracket: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _showWinnerDialog(Match match, Team team1, Team team2) async {
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Winner'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(team1.name),
+              onTap: () => Navigator.pop(context, team1.id),
+            ),
+            ListTile(
+              title: Text(team2.name),
+              onTap: () => Navigator.pop(context, team2.id),
+            ),
+          ],
+        ),
+        actions: [
+          if (match.hasWinner)
+            TextButton(
+              onPressed: () => Navigator.pop(context, -1), // Reset signal
+              child: const Text('Reset'),
+            ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && mounted) {
+      final matchProvider = Provider.of<MatchProvider>(context, listen: false);
+      try {
+        if (result == -1) {
+          await matchProvider.resetMatch(match.id);
+        } else {
+          await matchProvider.setMatchWinner(match.id, result);
+        }
+        setState(() {});
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result == -1 ? 'Match reset' : 'Winner set successfully'),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
+    final matchProvider = Provider.of<MatchProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(title: Text(tournament.name)),
-      body: FutureBuilder<List<Team>>(
-        future: teamProvider.getTeamsByTournament(tournament.id),
+      appBar: AppBar(title: Text(widget.tournament.name)),
+      body: FutureBuilder<List<dynamic>>(
+        future: Future.wait([
+          teamProvider.getTeamsByTournament(widget.tournament.id),
+          matchProvider.getMatchesByTournament(widget.tournament.id),
+        ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -37,9 +125,42 @@ class TournamentBracketPage extends StatelessWidget {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
 
-          final teams = snapshot.data ?? [];
-          final bracketSize = _bracketSize(tournament.maxTeamAmount);
+          final teams = snapshot.data![0] as List<Team>;
+          final matches = snapshot.data![1] as List<Match>;
+
+          // Check if bracket is initialized
+          if (matches.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Bracket not initialized yet',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: teams.length >= 2 ? _initializeBracket : null,
+                    child: const Text('Initialize Bracket'),
+                  ),
+                  if (teams.length < 2)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Text(
+                        'Need at least 2 teams',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          }
+
+          final bracketSize = _bracketSize(teams.length);
           final roundCount = _roundCount(bracketSize);
+
+          // Create a map of team IDs to Team objects for easy lookup
+          final teamMap = {for (var team in teams) team.id: team};
 
           return Scrollbar(
             thumbVisibility: true,
@@ -49,9 +170,11 @@ class TournamentBracketPage extends StatelessWidget {
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: _BracketBoard(
-                  teams: teams,
+                  matches: matches,
+                  teamMap: teamMap,
                   bracketSize: bracketSize,
                   roundCount: roundCount,
+                  onMatchTap: _showWinnerDialog,
                 ),
               ),
             ),
@@ -63,9 +186,11 @@ class TournamentBracketPage extends StatelessWidget {
 }
 
 class _BracketBoard extends StatelessWidget {
-  final List<Team> teams;
+  final List<Match> matches;
+  final Map<int, Team> teamMap;
   final int bracketSize;
   final int roundCount;
+  final Function(Match, Team, Team) onMatchTap;
 
   static const double _cardWidth = 112;
   static const double _cardHeight = 96;
@@ -75,9 +200,11 @@ class _BracketBoard extends StatelessWidget {
   static const double _lineThickness = 2;
 
   const _BracketBoard({
-    required this.teams,
+    required this.matches,
+    required this.teamMap,
     required this.bracketSize,
     required this.roundCount,
+    required this.onMatchTap,
   });
 
   String _roundLabel(int round) {
@@ -96,6 +223,16 @@ class _BracketBoard extends StatelessWidget {
   double _cardCenterY(int round, int index) =>
       _cardTop(round, index) + _cardHeight / 2;
 
+  Match? _findMatch(int round, int matchNumber) {
+    try {
+      return matches.firstWhere(
+        (m) => m.round == round && m.matchNumber == matchNumber,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -107,10 +244,12 @@ class _BracketBoard extends StatelessWidget {
 
     final children = <Widget>[];
 
+    // Build bracket
     for (int round = 0; round < roundCount; round++) {
       final cardsInRound = bracketSize ~/ (1 << round);
       final left = round * (_cardWidth + _connectorWidth);
 
+      // Round label
       children.add(
         Positioned(
           left: left,
@@ -131,24 +270,43 @@ class _BracketBoard extends StatelessWidget {
         ),
       );
 
+      // Match cards
       for (int i = 0; i < cardsInRound; i++) {
-        final String? label = (round == 0 && i < teams.length)
-            ? teams[i].name
-            : null;
+        final match = _findMatch(round, i);
+        
         children.add(
           Positioned(
             left: left,
             top: _cardTop(round, i),
             width: _cardWidth,
             height: _cardHeight,
-            child: _TeamCard(label: label),
+            child: _MatchCard(
+              match: match,
+              teamMap: teamMap,
+              onTap: match != null && match.canBePlayed && !match.hasWinner
+                  ? () {
+                      final team1 = teamMap[match.team1Id];
+                      final team2 = teamMap[match.team2Id];
+                      if (team1 != null && team2 != null) {
+                        onMatchTap(match, team1, team2);
+                      }
+                    }
+                  : match != null && match.hasWinner
+                      ? () {
+                          final team1 = teamMap[match.team1Id];
+                          final team2 = teamMap[match.team2Id];
+                          if (team1 != null && team2 != null) {
+                            onMatchTap(match, team1, team2);
+                          }
+                        }
+                      : null,
+            ),
           ),
         );
       }
 
-      if (round == roundCount - 1) {
-        continue;
-      }
+      // Draw connectors
+      if (round == roundCount - 1) continue;
 
       final connectorLeft = left + _cardWidth;
       final matches = cardsInRound ~/ 2;
@@ -159,6 +317,7 @@ class _BracketBoard extends StatelessWidget {
         final yBottom = _cardCenterY(round, i * 2 + 1);
         final yMiddle = (yTop + yBottom) / 2;
 
+        // Top horizontal line
         children.add(
           Positioned(
             left: connectorLeft,
@@ -169,6 +328,7 @@ class _BracketBoard extends StatelessWidget {
           ),
         );
 
+        // Bottom horizontal line
         children.add(
           Positioned(
             left: connectorLeft,
@@ -179,6 +339,7 @@ class _BracketBoard extends StatelessWidget {
           ),
         );
 
+        // Vertical line
         children.add(
           Positioned(
             left: connectorLeft + halfConnector - _lineThickness / 2,
@@ -189,6 +350,7 @@ class _BracketBoard extends StatelessWidget {
           ),
         );
 
+        // Middle horizontal line to next round
         children.add(
           Positioned(
             left: connectorLeft + halfConnector,
@@ -209,36 +371,122 @@ class _BracketBoard extends StatelessWidget {
   }
 }
 
-class _TeamCard extends StatelessWidget {
-  final String? label;
+class _MatchCard extends StatelessWidget {
+  final Match? match;
+  final Map<int, Team> teamMap;
+  final VoidCallback? onTap;
 
-  const _TeamCard({this.label});
+  const _MatchCard({
+    this.match,
+    required this.teamMap,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isTbd = label == null;
 
-    return Card(
-      elevation: isTbd ? 1 : 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+    if (match == null) {
+      return Card(
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Center(
           child: Text(
-            isTbd ? '?' : label!,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            '?',
             style: TextStyle(
               fontSize: 13,
-              fontWeight: isTbd ? FontWeight.w400 : FontWeight.w600,
-              color: isTbd
-                  ? colorScheme.onSurface.withValues(alpha: 0.38)
-                  : colorScheme.onSurface,
+              fontWeight: FontWeight.w400,
+              color: colorScheme.onSurface.withValues(alpha: 0.38),
             ),
           ),
         ),
+      );
+    }
+
+    final team1 = match!.team1Id != null ? teamMap[match!.team1Id] : null;
+    final team2 = match!.team2Id != null ? teamMap[match!.team2Id] : null;
+    final winner = match!.winnerId != null ? teamMap[match!.winnerId] : null;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: match!.hasWinner ? 3 : 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: match!.hasWinner
+              ? BorderSide(color: colorScheme.primary, width: 2)
+              : BorderSide.none,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (team1 != null && team2 != null) ...[
+                _TeamLabel(
+                  team: team1,
+                  isWinner: match!.winnerId == team1.id,
+                  colorScheme: colorScheme,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'vs',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                _TeamLabel(
+                  team: team2,
+                  isWinner: match!.winnerId == team2.id,
+                  colorScheme: colorScheme,
+                ),
+              ] else if (winner != null) ...[
+                _TeamLabel(
+                  team: winner,
+                  isWinner: true,
+                  colorScheme: colorScheme,
+                ),
+              ] else
+                Text(
+                  '?',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: colorScheme.onSurface.withValues(alpha: 0.38),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TeamLabel extends StatelessWidget {
+  final Team team;
+  final bool isWinner;
+  final ColorScheme colorScheme;
+
+  const _TeamLabel({
+    required this.team,
+    required this.isWinner,
+    required this.colorScheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      team.name,
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: isWinner ? FontWeight.w700 : FontWeight.w500,
+        color: isWinner ? colorScheme.primary : colorScheme.onSurface,
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:frontend_splatournament_manager/pages/home_page.dart';
 import 'package:frontend_splatournament_manager/pages/login_page.dart';
 import 'package:frontend_splatournament_manager/pages/settings_page.dart';
 import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
+import 'package:frontend_splatournament_manager/providers/match_provider.dart';
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:frontend_splatournament_manager/providers/theme_provider.dart';
 import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
@@ -17,6 +18,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => TournamentProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => TeamProvider()),
+        ChangeNotifierProvider(create: (_) => MatchProvider()),
       ],
       child: const SplatournamentApp(),
     ),
