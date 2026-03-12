@@ -6,26 +6,34 @@ import '../providers/theme_provider.dart';
 class ThemeSelectorWidget extends StatelessWidget {
   ThemeSelectorWidget({super.key});
 
-  final List<DropdownMenuItem> dropdownElements = [
-    DropdownMenuItem(
-      value: ThemeMode.light,
-      child: Text("Light"),
+  final List<DropdownMenuItem<AppThemeOption>> dropdownElements = [
+    const DropdownMenuItem(
+      value: AppThemeOption.lightBlue,
+      child: Text("Light Blue"),
     ),
-    DropdownMenuItem(
-      value: ThemeMode.dark,
-      child: Text("Dark"),
+    const DropdownMenuItem(
+      value: AppThemeOption.darkPurple,
+      child: Text("Dark Purple"),
     ),
-    DropdownMenuItem(
-      value: ThemeMode.system,
-      child: Text("System"),
+    const DropdownMenuItem(
+      value: AppThemeOption.lightMint,
+      child: Text("Light Mint"),
     ),
+    const DropdownMenuItem(
+      value: AppThemeOption.darkAmber,
+      child: Text("Dark Amber"),
+    ),
+    const DropdownMenuItem(value: AppThemeOption.system, child: Text("System")),
   ];
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
-      decoration: BoxDecoration(color: Theme.of(context).hoverColor, borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).hoverColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
       padding: const EdgeInsets.all(8.0),
       margin: const EdgeInsets.all(8.0),
       child: Row(
@@ -34,10 +42,10 @@ class ThemeSelectorWidget extends StatelessWidget {
           Text("Theme"),
           SizedBox(
             width: 250,
-            child: DropdownButtonFormField(
-              icon: Icon(Icons.color_lens),
+            child: DropdownButtonFormField<AppThemeOption>(
+              icon: const Icon(Icons.color_lens),
               items: dropdownElements,
-              initialValue: themeProvider.theme,
+              initialValue: themeProvider.selectedTheme,
               onChanged: (value) {
                 if (value == null) return;
                 themeProvider.setTheme(value);
@@ -48,5 +56,4 @@ class ThemeSelectorWidget extends StatelessWidget {
       ),
     );
   }
-
 }

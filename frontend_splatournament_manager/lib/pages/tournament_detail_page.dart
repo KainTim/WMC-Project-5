@@ -18,15 +18,19 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
 
   void _showJoinTeamDialog(BuildContext context, int tournamentId) async {
     final teamProvider = Provider.of<TeamProvider>(context, listen: false);
-    
+
     try {
       final teams = await teamProvider.getUserTeams();
-      
+
       if (!context.mounted) return;
-      
+
       if (teams.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('You are not a member of any team. Join or create a team first!')),
+          const SnackBar(
+            content: Text(
+              'You are not a member of any team. Join or create a team first!',
+            ),
+          ),
         );
         return;
       }
@@ -46,8 +50,8 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
                   return ListTile(
                     leading: CircleAvatar(child: Text(team.tag)),
                     title: Text(team.name),
-                    subtitle: team.description.isNotEmpty 
-                        ? Text(team.description) 
+                    subtitle: team.description.isNotEmpty
+                        ? Text(team.description)
                         : null,
                     onTap: () => Navigator.pop(dialogContext, team),
                   );
@@ -70,15 +74,15 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
             tournamentId,
             selectedTeam.id,
           );
-          
+
           if (!context.mounted) return;
-          
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${selectedTeam.name} joined the tournament!'),
             ),
           );
-          
+
           // Refresh teams list if currently showing
           if (isShowingTeams) {
             setState(() {});
@@ -87,25 +91,34 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Failed to join: ${e.toString().replaceAll('Exception: ', '')}'),
+              content: Text(
+                'Failed to join: ${e.toString().replaceAll('Exception: ', '')}',
+              ),
             ),
           );
         }
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load your teams: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load your teams: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final appBarBackground = colorScheme.surface.withValues(alpha: 0.78);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.tournament.name, style: TextStyle(overflow: TextOverflow.ellipsis)),
-        backgroundColor: Theme.of(context).colorScheme.surface.withAlpha(180),
+        backgroundColor: appBarBackground,
+        foregroundColor: colorScheme.onSurface,
+        title: Text(
+          widget.tournament.name,
+          style: TextStyle(overflow: TextOverflow.ellipsis),
+        ),
         elevation: 3,
         actions: [
           IconButton(

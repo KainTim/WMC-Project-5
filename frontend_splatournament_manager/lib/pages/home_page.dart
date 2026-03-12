@@ -17,7 +17,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   int _selectedIndex = 0;
   late TabController _tabController;
 
@@ -35,12 +36,23 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
+    final appBarForeground =
+        Theme.of(context).appBarTheme.foregroundColor ??
+        Theme.of(context).colorScheme.onSurface;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_selectedIndex == 0 ? "Tournaments" : "Teams"),
         bottom: _selectedIndex == 1
             ? TabBar(
                 controller: _tabController,
+                labelColor: appBarForeground,
+                unselectedLabelColor: appBarForeground.withValues(alpha: 0.82),
+                indicatorColor: appBarForeground,
+                labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                ),
                 tabs: const [
                   Tab(text: 'All Teams'),
                   Tab(text: 'My Teams'),
@@ -101,10 +113,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           // Teams View with tabs
           TabBarView(
             controller: _tabController,
-            children: const [
-              TeamsListWidget(),
-              MyTeamsWidget(),
-            ],
+            children: const [TeamsListWidget(), MyTeamsWidget()],
           ),
         ],
       ),
@@ -120,10 +129,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             icon: Icon(Icons.emoji_events),
             label: 'Tournaments',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.groups),
-            label: 'Teams',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Teams'),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -138,9 +144,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           } else {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const CreateTeamPage(),
-              ),
+              MaterialPageRoute(builder: (context) => const CreateTeamPage()),
             );
           }
         },

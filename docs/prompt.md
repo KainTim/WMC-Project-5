@@ -77,3 +77,17 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - Show a placeholder in the carousel if no tournaments were found.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart
+
+- Add 2 more themes that change the colors of the application, one light and one dark.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/providers/theme_provider.dart
+    - frontend_splatournament_manager/lib/main.dart
+    - frontend_splatournament_manager/lib/widgets/theme_selector_widget.dart
+
+- Make the background color of the tournament detail page semi-transparent and keep the title text legible.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart
+
+- In the Teams view, fix the upper TabBar text so selected and non-selected labels are readable.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/home_page.dart

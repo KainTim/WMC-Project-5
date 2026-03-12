@@ -32,15 +32,9 @@ class SplatournamentApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Splatournament Manager',
       routerConfig: routes,
-      themeMode: themeProvider.theme,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.blue,
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.deepPurple,
-      ),
+      themeMode: themeProvider.themeMode,
+      theme: themeProvider.lightTheme,
+      darkTheme: themeProvider.darkTheme,
     );
   }
 }
@@ -50,10 +44,10 @@ final routes = GoRouter(
   redirect: (context, state) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.checkAuthStatus();
-    
+
     final isLoggedIn = authProvider.isLoggedIn;
     final isGoingToLogin = state.matchedLocation == '/login';
-    // redirect to login 
+    // redirect to login
     if (!isLoggedIn && !isGoingToLogin) {
       return '/login';
     }
@@ -61,7 +55,7 @@ final routes = GoRouter(
     if (isLoggedIn && isGoingToLogin) {
       return '/';
     }
-    
+
     return null;
   },
   routes: [
