@@ -91,3 +91,7 @@ Folgende Dateien wurden in diesem Prompt verändert:
 - In the Teams view, fix the upper TabBar text so selected and non-selected labels are readable.<br><br>
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/pages/home_page.dart
+
+- Only allow entering a tournament if the registration period is open currently.<br><br>
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart

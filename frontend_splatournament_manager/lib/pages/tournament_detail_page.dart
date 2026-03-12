@@ -155,10 +155,16 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 24),
               child: ElevatedButton(
-                child: Text("Join with Team"),
-                onPressed: () {
-                  _showJoinTeamDialog(context, widget.tournament.id);
-                },
+                onPressed: widget.tournament.isRegistrationOpen
+                    ? () => _showJoinTeamDialog(context, widget.tournament.id)
+                    : null,
+                child: Text(
+                  widget.tournament.isRegistrationFuture
+                      ? "Registration not open yet"
+                      : widget.tournament.isRegistrationPast
+                      ? "Registration closed"
+                      : "Join with Team",
+                ),
               ),
             ),
           ),
