@@ -3,7 +3,7 @@ description: Instructions for documenting prompts and file changes in docs/promp
 applyTo: '**'
 ---
 
-# Writing Prompts to docs/prompt.md
+# Writing Prompts to docs/prompts.md
 
 ## Purpose
 Document all AI prompts and track which files were modified as a result of each prompt.
@@ -20,7 +20,7 @@ Document all AI prompts and track which files were modified as a result of each 
 Each prompt entry should follow this structure:
 
 1. **Prompt text**: Write the actual prompt as a bullet point while only fixing grammatical errors (`-`)
-2. **Separator**: Add `<br><br>` after the prompt text
+2. **Separator**: Add `   ` (three spaces) after the prompt text
 3. **File changes header**: Add the line `Folgende Dateien wurden in diesem Prompt verändert:`
 4. **File list**: List all affected files as indented sub-bullets (4 spaces + `-`)
    - Include file paths relative to the project root
@@ -30,7 +30,7 @@ Each prompt entry should follow this structure:
 ```markdown
 ## 11.03.2026
 
-- [Prompt text here]<br><br>
+- [Prompt text here]   
 Folgende Dateien wurden in diesem Prompt verändert:
     - path/to/file1.ts
     - path/to/file2.dart (neu erstellt)
@@ -47,4 +47,4 @@ Folgende Dateien wurden in diesem Prompt verändert:
 6. Maintain chronological order within each date section
 
 ## File Location
-All prompt documentation goes into: `docs/prompt.md`
+All prompt documentation goes into: `docs/prompts.md`
