@@ -14,7 +14,7 @@ class MyTournamentsCarousel extends StatefulWidget {
 class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
   @override
   Widget build(BuildContext context) {
-    final teamProvider = Provider.of<TeamProvider>(context);    
+    final teamProvider = Provider.of<TeamProvider>(context);
     return FutureBuilder<List<Map<String, dynamic>>>(
       future: teamProvider.getMyTeamsTournaments(),
       builder: (context, snapshot) {
@@ -30,7 +30,7 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
         }
 
         final tournaments = snapshot.data ?? [];
-        
+
         if (tournaments.isEmpty) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,7 +51,11 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.emoji_events_outlined, size: 48, color: Colors.grey),
+                        Icon(
+                          Icons.emoji_events_outlined,
+                          size: 48,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(height: 8),
                         const Text(
                           'No tournaments found',
@@ -111,7 +115,8 @@ class _TournamentCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TournamentDetailPage(tournament: tournament),
+              builder: (context) =>
+                  TournamentDetailPage(tournament: tournament),
             ),
           );
         },
@@ -149,15 +154,15 @@ class _TournamentCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    tournament.isRegistrationOpen 
-                        ? Icons.check_circle 
+                    tournament.isRegistrationOpen
+                        ? Icons.check_circle
                         : Icons.cancel,
                     size: 18,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    tournament.isRegistrationOpen 
-                        ? 'Registration Open' 
+                    tournament.isRegistrationOpen
+                        ? 'Registration Open'
                         : 'Registration Closed',
                     style: const TextStyle(fontSize: 14),
                   ),
