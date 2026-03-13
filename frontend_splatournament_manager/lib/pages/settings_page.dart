@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_splatournament_manager/widgets/my_teams_widget.dart';
 import 'package:frontend_splatournament_manager/widgets/theme_selector_widget.dart';
-import 'package:provider/provider.dart';
-import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
-import 'package:go_router/go_router.dart';
 
 import '../widgets/profile_widget.dart';
 
@@ -17,28 +15,23 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Einstellungen')),
+      appBar: AppBar(title: const Text('Profil')),
       body: Column(
         children: [
           const SizedBox(height: 24),
           const ProfileWidget(),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ThemeSelectorWidget(),
-              ListTile(
-                leading: const Icon(Icons.logout, color: Colors.red),
-                title: const Text(
-                  'Abmelden',
-                  style: TextStyle(color: Colors.red),
-                ),
-                onTap: () {
-                  Provider.of<AuthProvider>(context, listen: false).logout();
-                  context.go('/login');
-                },
+          ThemeSelectorWidget(),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Meine Teams',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-            ],
+            ),
           ),
+          const Expanded(child: MyTeamsWidget()),
         ],
       ),
     );

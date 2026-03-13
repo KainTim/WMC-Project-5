@@ -148,3 +148,24 @@ Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/linux/runner/my_application.cc
     - frontend_splatournament_manager/windows/runner/main.cpp
     - frontend_splatournament_manager/windows/runner/Runner.rc
+
+- Move the sign out button to the popup menu in the homescreen.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/home_page.dart
+    - frontend_splatournament_manager/lib/pages/settings_page.dart
+
+- Move only the "Meine Teams" list to the settings menu, keep the "Alle Teams" list in the homescreen but get rid of the top tabbar.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/home_page.dart
+    - frontend_splatournament_manager/lib/pages/settings_page.dart
+    - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
+
+- The member count isn't updated in both lists when joining and leaving a team.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/providers/team_provider.dart
+    - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
+
+- Rename the settings page to Profile
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/settings_page.dart
+    - frontend_splatournament_manager/lib/pages/home_page.dart

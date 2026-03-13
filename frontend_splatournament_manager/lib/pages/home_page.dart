@@ -3,10 +3,10 @@ import 'package:frontend_splatournament_manager/providers/tournament_provider.da
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
 import 'package:frontend_splatournament_manager/widgets/available_tournament_list.dart';
 import 'package:frontend_splatournament_manager/widgets/teams_list_widget.dart';
-import 'package:frontend_splatournament_manager/widgets/my_teams_widget.dart';
 import 'package:frontend_splatournament_manager/widgets/my_tournaments_carousel.dart';
 import 'package:frontend_splatournament_manager/pages/create_tournament_page.dart';
 import 'package:frontend_splatournament_manager/pages/create_team_page.dart';
+import 'package:frontend_splatournament_manager/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -17,48 +17,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
-    final appBarForeground =
-        Theme.of(context).appBarTheme.foregroundColor ??
-        Theme.of(context).colorScheme.onSurface;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_selectedIndex == 0 ? 'Turniere' : 'Teams'),
-        bottom: _selectedIndex == 1
-            ? TabBar(
-                controller: _tabController,
-                labelColor: appBarForeground,
-                unselectedLabelColor: appBarForeground.withValues(alpha: 0.82),
-                indicatorColor: appBarForeground,
-                labelStyle: const TextStyle(fontWeight: FontWeight.w700),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-                tabs: const [
-                  Tab(text: 'Alle Teams'),
-                  Tab(text: 'Meine Teams'),
-                ],
-              )
-            : null,
         actions: [
           IconButton(
             onPressed: () async {
@@ -91,12 +57,24 @@ class _HomePageState extends State<HomePage>
           ),
           PopupMenuButton(
             onSelected: (value) {
-              context.go("/settings");
+              if (value == 1) {
+                context.go("/settings");
+              } else if (value == 2) {
+                Provider.of<AuthProvider>(context, listen: false).logout();
+                context.go('/login');
+              }
             },
             offset: const Offset(0, 48),
             itemBuilder: (context) {
               return [
-                const PopupMenuItem(value: 1, child: Text('Einstellungen')),
+                const PopupMenuItem(value: 1, child: Text('Profil')),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text(
+                    'Abmelden',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
               ];
             },
           ),
@@ -112,11 +90,8 @@ class _HomePageState extends State<HomePage>
               const Expanded(child: AvailableTournamentList()),
             ],
           ),
-          // Teams View with tabs
-          TabBarView(
-            controller: _tabController,
-            children: const [TeamsListWidget(), MyTeamsWidget()],
-          ),
+          // Teams View
+          const TeamsListWidget(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

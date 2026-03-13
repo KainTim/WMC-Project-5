@@ -6,9 +6,12 @@ class TeamProvider extends ChangeNotifier {
   final TeamService _teamService = TeamService();
 
   List<Team> _teams = [];
+  List<Team> _userTeams = [];
   Future<List<Team>>? _initialLoadFuture;
+  Future<List<Team>>? _userTeamsFuture;
 
   List<Team> get teams => _teams;
+  List<Team> get userTeams => _userTeams;
 
   Future<List<Team>> fetchAllTeams() async {
     _teams = await _teamService.getAllTeams();
@@ -24,6 +27,17 @@ class TeamProvider extends ChangeNotifier {
   Future<List<Team>> refreshTeams() {
     _initialLoadFuture = fetchAllTeams();
     return _initialLoadFuture!;
+  }
+
+  Future<List<Team>> fetchUserTeams() async {
+    _userTeams = await _teamService.getUserTeams();
+    notifyListeners();
+    return _userTeams;
+  }
+
+  Future<List<Team>> ensureUserTeamsLoaded() {
+    _userTeamsFuture ??= fetchUserTeams();
+    return _userTeamsFuture!;
   }
 
   Future<Team> createTeam({
@@ -77,11 +91,19 @@ class TeamProvider extends ChangeNotifier {
 
   Future<void> joinTeam(int teamId) async {
     await _teamService.joinTeam(teamId);
-    notifyListeners();
+    await _refreshMembership();
   }
 
   Future<void> leaveTeam(int teamId) async {
     await _teamService.leaveTeam(teamId);
+    await _refreshMembership();
+  }
+
+  Future<void> _refreshMembership() async {
+    await Future.wait([
+      _teamService.getAllTeams().then((t) => _teams = t),
+      _teamService.getUserTeams().then((t) => _userTeams = t),
+    ]);
     notifyListeners();
   }
 
