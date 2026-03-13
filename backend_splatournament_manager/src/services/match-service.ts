@@ -120,11 +120,11 @@ export class MatchService {
                 [matchId],
                 (err, match: any) => {
                     if (err) return reject(err);
-                    if (!match) return reject(new Error('Match nicht gefunden'));
+                    if (!match) return reject(new Error('Match not found'));
 
                     // Validate that the winnerId is one of the participants
                     if (match.team1Id !== winnerId && match.team2Id !== winnerId) {
-                        return reject(new Error('Der Sieger muss eines der Teams dieses Matches sein'));
+                        return reject(new Error('Winner must be one of the match participants'));
                     }
 
                     // Update the match with winner
@@ -182,7 +182,7 @@ export class MatchService {
                 [matchId],
                 (err, match: any) => {
                     if (err) return reject(err);
-                    if (!match) return reject(new Error('Match nicht gefunden'));
+                    if (!match) return reject(new Error('Match not found'));
 
                     const previousWinnerId = match.winnerId;
 

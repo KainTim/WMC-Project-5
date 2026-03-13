@@ -179,3 +179,16 @@ Folgende Dateien wurden in diesem Prompt verändert:
 Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/widgets/available_tournament_list.dart
     - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart
+
+- The bracket visualization shows enough space for 8 teams when the max team amount is only 4 and the bracket was initialized.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+
+- The winner isn't being shown in the final card.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+
+- lock the matches if the next game match winner was already chosen.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/services/match-service.ts
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart

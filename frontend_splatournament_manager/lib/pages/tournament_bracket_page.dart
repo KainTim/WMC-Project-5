@@ -236,7 +236,11 @@ class _BracketBoard extends StatelessWidget {
   }
 
   double _cardTop(int round, int index) {
-    final slotHeight = _baseSlotHeight * (1 << round).toDouble();
+    if (round == roundCount - 1) {
+      final contentHeight = bracketSize * _baseSlotHeight.toDouble();
+      return _headerHeight + (contentHeight - _cardHeight) / 2;
+    }
+    final slotHeight = _baseSlotHeight * (1 << (round + 1)).toDouble();
     return _headerHeight + index * slotHeight + (slotHeight - _cardHeight) / 2;
   }
 
@@ -266,7 +270,9 @@ class _BracketBoard extends StatelessWidget {
 
     // Build bracket
     for (int round = 0; round < roundCount; round++) {
-      final cardsInRound = bracketSize ~/ (1 << round);
+      final cardsInRound = round == roundCount - 1
+          ? 1
+          : bracketSize ~/ (1 << (round + 1));
       final left = round * (_cardWidth + _connectorWidth);
 
       // Round label
@@ -292,7 +298,16 @@ class _BracketBoard extends StatelessWidget {
 
       // Match cards
       for (int i = 0; i < cardsInRound; i++) {
-        final match = _findMatch(round, i);
+        final isSieger = round == roundCount - 1;
+        final match = isSieger
+            ? _findMatch(round - 1, 0)
+            : _findMatch(round, i);
+
+        // Lock match if its downstream match already has a winner
+        final downstreamMatch = (!isSieger && round < roundCount - 2)
+            ? _findMatch(round + 1, i ~/ 2)
+            : null;
+        final isLocked = downstreamMatch != null && downstreamMatch.hasWinner;
 
         children.add(
           Positioned(
@@ -303,7 +318,11 @@ class _BracketBoard extends StatelessWidget {
             child: _MatchCard(
               match: match,
               teamMap: teamMap,
-              onTap: match != null && match.canBePlayed && !match.hasWinner
+              showWinnerOnly: isSieger,
+              isLocked: isLocked,
+              onTap: isSieger || isLocked
+                  ? null
+                  : match != null && match.canBePlayed && !match.hasWinner
                   ? () {
                       final team1 = teamMap[match.team1Id];
                       final team2 = teamMap[match.team2Id];
@@ -395,8 +414,16 @@ class _MatchCard extends StatelessWidget {
   final Match? match;
   final Map<int, Team> teamMap;
   final VoidCallback? onTap;
+  final bool showWinnerOnly;
+  final bool isLocked;
 
-  const _MatchCard({this.match, required this.teamMap, this.onTap});
+  const _MatchCard({
+    this.match,
+    required this.teamMap,
+    this.onTap,
+    this.showWinnerOnly = false,
+    this.isLocked = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -429,7 +456,9 @@ class _MatchCard extends StatelessWidget {
         elevation: match!.hasWinner ? 3 : 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: match!.hasWinner
+          side: isLocked
+              ? BorderSide(color: colorScheme.outlineVariant, width: 1)
+              : match!.hasWinner
               ? BorderSide(color: colorScheme.primary, width: 2)
               : BorderSide.none,
         ),
@@ -438,7 +467,7 @@ class _MatchCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (team1 != null && team2 != null) ...[
+              if (!showWinnerOnly && team1 != null && team2 != null) ...[
                 _TeamLabel(
                   team: team1,
                   isWinner: match!.winnerId == team1.id,
