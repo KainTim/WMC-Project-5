@@ -62,3 +62,16 @@ Auf dem Hauptbildschirm muss das gewünschte Turnier angeklickt werden um in die
 
 ### Eingetragenes Spiel korrigieren
 Auf dem Hauptbildschirm muss das gewünschte Turnier angeklickt werden um in die Detailansicht zu gelangen, danach kann auf den Knopf "Turnierbaum ansehen" geklickt werden. Wenn dieser schon initialisiert wurde, wird der Baum angezeigt. Wenn ein Fehler beim Eintragen passiert ist und das nächste Spiel noch nicht eingetragen wurde, kann auf das zu korrigierende Spiel geklickt werden und der Menüpunkt "Zurücksetzen" ist auszuwählen.
+
+## Screenshots
+|  |  |
+|---|---|
+| ![Screenshot_01](images/Splatournament-Screenshots/Screenshot_01.png) | ![Screenshot_02](images/Splatournament-Screenshots/Screenshot_02.png) |
+| ![Screenshot_03](images/Splatournament-Screenshots/Screenshot_03.png) | ![Screenshot_04](images/Splatournament-Screenshots/Screenshot_04.png) |
+| ![Screenshot_05](images/Splatournament-Screenshots/Screenshot_05.png) | ![Screenshot_06](images/Splatournament-Screenshots/Screenshot_06.png) |
+| ![Screenshot_07](images/Splatournament-Screenshots/Screenshot_07.png) | ![Screenshot_08](images/Splatournament-Screenshots/Screenshot_08.png) |
+| ![Screenshot_09](images/Splatournament-Screenshots/Screenshot_09.png) | ![Screenshot_10](images/Splatournament-Screenshots/Screenshot_10.png) |
+| ![Screenshot_11](images/Splatournament-Screenshots/Screenshot_11.png) | ![Screenshot_12](images/Splatournament-Screenshots/Screenshot_12.png) |
+| ![Screenshot_13](images/Splatournament-Screenshots/Screenshot_13.png) | ![Screenshot_14](images/Splatournament-Screenshots/Screenshot_14.png) |
+| ![Screenshot_15](images/Splatournament-Screenshots/Screenshot_15.png) | ![Screenshot_16](images/Splatournament-Screenshots/Screenshot_16.png) |
+| ![Screenshot_17](images/Splatournament-Screenshots/Screenshot_17.png) | ![Screenshot_18](images/Splatournament-Screenshots/Screenshot_18.png) |
