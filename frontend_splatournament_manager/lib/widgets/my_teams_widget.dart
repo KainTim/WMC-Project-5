@@ -52,8 +52,9 @@ class MyTeamsWidget extends StatelessWidget {
     final memberCountText = team.memberCount != null
         ? "${team.memberCount}/4 Mitglieder"
         : "Keine Mitglieder";
-    final description =
-        team.description.isEmpty ? "Keine Beschreibung" : team.description;
+    final description = team.description.isEmpty
+        ? "Keine Beschreibung"
+        : team.description;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -93,9 +94,10 @@ class MyTeamsWidget extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       try {
-        await Provider.of<TeamProvider>(context, listen: false).leaveTeam(
-          team.id,
-        );
+        await Provider.of<TeamProvider>(
+          context,
+          listen: false,
+        ).leaveTeam(team.id);
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,

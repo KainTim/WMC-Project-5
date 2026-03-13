@@ -158,15 +158,17 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: teams.length >= 2 ? _initializeBracket : null,
+                    onPressed: teams.length >= widget.tournament.maxTeamAmount
+                        ? _initializeBracket
+                        : null,
                     child: const Text('Turnierbaum initialisieren'),
                   ),
-                  if (teams.length < 2)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
+                  if (teams.length < widget.tournament.maxTeamAmount)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        'Mindestens 2 Teams erforderlich',
-                        style: TextStyle(color: Colors.red),
+                        '${teams.length}/${widget.tournament.maxTeamAmount} Teams angemeldet',
+                        style: const TextStyle(color: Colors.red),
                       ),
                     ),
                 ],

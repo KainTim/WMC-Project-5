@@ -61,7 +61,12 @@ class TeamProvider extends ChangeNotifier {
     String? tag,
     String? description,
   }) async {
-    await _teamService.updateTeam(id, name: name, tag: tag, description: description);
+    await _teamService.updateTeam(
+      id,
+      name: name,
+      tag: tag,
+      description: description,
+    );
     await refreshTeams();
   }
 
@@ -114,7 +119,7 @@ class TeamProvider extends ChangeNotifier {
   Future<List<Map<String, dynamic>>> getMyTeamsTournaments() async {
     final userTeams = await getUserTeams();
     final Set<Map<String, dynamic>> tournamentsSet = {};
-    
+
     for (final team in userTeams) {
       try {
         final tournaments = await _teamService.getTournamentsByTeam(team.id);
@@ -123,8 +128,7 @@ class TeamProvider extends ChangeNotifier {
         // If a team has no tournaments, continue with others
       }
     }
-    
+
     return tournamentsSet.toList();
   }
 }
-

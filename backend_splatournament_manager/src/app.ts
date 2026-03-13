@@ -75,11 +75,19 @@ app.post('/tournaments/:id/bracket', authMiddleware, async (req: Request, res: R
         const tournamentId = +req.params.id;
         const teams = await teamService.getTeamsByTournamentId(tournamentId);
         const teamIds = teams.map(team => team.id);
-        
+        const tournament = await tournamentService.getTournamentById(tournamentId);
+        if (!tournament) {
+            return res.status(404).send({error: 'Turnier nicht gefunden'});
+        }
+
         if (teamIds.length < 2) {
             return res.status(400).send({error: 'Mindestens 2 Teams sind erforderlich, um den Turnierbaum zu initialisieren'});
         }
-        
+
+        if (teamIds.length < tournament.maxTeamAmount) {
+            return res.status(400).send({error: `Es müssen alle ${tournament.maxTeamAmount} Teams angemeldet sein, um den Turnierbaum zu initialisieren`});
+        }
+
         await matchService.initializeBracket(tournamentId, teamIds);
         res.status(201).send({message: 'Turnierbaum erfolgreich initialisiert'});
     } catch (err) {

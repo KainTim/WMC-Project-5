@@ -70,10 +70,7 @@ class _HomePageState extends State<HomePage> {
                 const PopupMenuItem(value: 1, child: Text('Profil')),
                 const PopupMenuItem(
                   value: 2,
-                  child: Text(
-                    'Abmelden',
-                    style: TextStyle(color: Colors.red),
-                  ),
+                  child: Text('Abmelden', style: TextStyle(color: Colors.red)),
                 ),
               ];
             },
