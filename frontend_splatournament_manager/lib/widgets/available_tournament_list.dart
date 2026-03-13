@@ -108,9 +108,7 @@ class TournamentListItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              CircleAvatar(
-                child: const Icon(Icons.emoji_events),
-              ),
+              CircleAvatar(child: const Icon(Icons.emoji_events)),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
