@@ -174,3 +174,8 @@ Folgende Dateien wurden in diesem Prompt verändert:
 Folgende Dateien wurden in diesem Prompt verändert:
     - backend_splatournament_manager/src/app.ts
     - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+
+- Style the tournament list and detail page to look closer to the rest of the app.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - frontend_splatournament_manager/lib/widgets/available_tournament_list.dart
+    - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart

@@ -243,46 +243,50 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
                   );
                 }
                 return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                   itemCount: teams.length,
                   itemBuilder: (context, index) {
                     final team = teams[index];
-                    return ListTile(
-                      leading: CircleAvatar(child: Text(team.tag)),
-                      title: Text(team.name),
-                      subtitle: team.description.isNotEmpty
-                          ? Text(team.description)
-                          : null,
-                      trailing: IconButton(
-                        icon: Icon(
-                          Icons.remove_circle_outline,
-                          color: Colors.red,
-                        ),
-                        onPressed: () async {
-                          try {
-                            await Provider.of<TeamProvider>(
-                              context,
-                              listen: false,
-                            ).removeTeamFromTournament(
-                              widget.tournament.id,
-                              team.id,
-                            );
-                            setState(() {
-                              _teamsFuture = Provider.of<TeamProvider>(
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      child: ListTile(
+                        leading: CircleAvatar(child: Text(team.tag)),
+                        title: Text(team.name),
+                        subtitle: team.description.isNotEmpty
+                            ? Text(team.description)
+                            : null,
+                        trailing: IconButton(
+                          icon: const Icon(
+                            Icons.remove_circle_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () async {
+                            try {
+                              await Provider.of<TeamProvider>(
                                 context,
                                 listen: false,
-                              ).getTeamsByTournament(widget.tournament.id);
-                            });
-                          } catch (e) {
-                            if (!context.mounted) return;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Team konnte nicht entfernt werden: ${e.toString().replaceFirst('Exception: ', '')}',
+                              ).removeTeamFromTournament(
+                                widget.tournament.id,
+                                team.id,
+                              );
+                              setState(() {
+                                _teamsFuture = Provider.of<TeamProvider>(
+                                  context,
+                                  listen: false,
+                                ).getTeamsByTournament(widget.tournament.id);
+                              });
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Team konnte nicht entfernt werden: ${e.toString().replaceFirst('Exception: ', '')}',
+                                  ),
                                 ),
-                              ),
-                            );
-                          }
-                        },
+                              );
+                            }
+                          },
+                        ),
                       ),
                     );
                   },
@@ -379,26 +383,34 @@ class DetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
-      height: 350,
+      height: 250,
       width: double.maxFinite,
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadiusDirectional.vertical(
-            bottom: Radius.circular(8),
+          borderRadius: const BorderRadiusDirectional.vertical(
+            bottom: Radius.circular(16),
           ),
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            //TODO: Replace with proper image
-            image: NetworkImage(
-              "https://flutter.dev/assets/image_1.w635.f71cbb614cd16a40bfb87e128278227c.png",
-            ),
+          gradient: LinearGradient(
+            colors: [
+              colorScheme.primaryContainer,
+              colorScheme.secondaryContainer,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-        padding: EdgeInsets.fromLTRB(16, 0, 0, 12),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
         child: Column(
-          verticalDirection: VerticalDirection.up,
           children: [
+            const SizedBox(height: 80),
+            Icon(
+              Icons.emoji_events,
+              size: 116,
+              color: colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+            ),
+            Spacer(),
             Row(
               children: [
                 InputChip(

@@ -9,22 +9,24 @@ class AvailableTournamentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
-      child: Column(
-        children: [
-          const Row(children: [Text('Verfügbare Turniere')]),
-          SizedBox(
-            width: double.infinity,
-            height: 350,
-            child: Consumer<TournamentProvider>(
-              builder: (context, provider, _) {
-                return TournamentListFutureBuilder(provider: provider);
-              },
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Text(
+            'Verfügbare Turniere',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-        ],
-      ),
+        ),
+        Expanded(
+          child: Consumer<TournamentProvider>(
+            builder: (context, provider, _) {
+              return TournamentListFutureBuilder(provider: provider);
+            },
+          ),
+        ),
+      ],
     );
   }
 }
@@ -58,6 +60,7 @@ class TournamentListFutureBuilder extends StatelessWidget {
         }
 
         return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           shrinkWrap: false,
           itemCount: list.length,
           itemBuilder: (context, index) {
@@ -70,6 +73,15 @@ class TournamentListFutureBuilder extends StatelessWidget {
   }
 }
 
+String _fmtDate(String iso) {
+  try {
+    final d = DateTime.parse(iso);
+    return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
+  } catch (_) {
+    return iso;
+  }
+}
+
 class TournamentListItem extends StatelessWidget {
   final Tournament tournament;
 
@@ -77,19 +89,50 @@ class TournamentListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.all(0),
-      leading: Icon(Icons.abc),
-      title: Text(tournament.name),
-      subtitle: Text(tournament.description),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TournamentDetailPage(tournament: tournament),
+    final dateRange =
+        '${_fmtDate(tournament.registrationStartDate)} – ${_fmtDate(tournament.registrationEndDate)}';
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  TournamentDetailPage(tournament: tournament),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                child: const Icon(Icons.emoji_events),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      tournament.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${tournament.currentTeamAmount}/${tournament.maxTeamAmount} Teams\n$dateRange',
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
