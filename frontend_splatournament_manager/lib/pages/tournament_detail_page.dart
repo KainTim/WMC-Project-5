@@ -3,6 +3,7 @@ import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:frontend_splatournament_manager/pages/tournament_bracket_page.dart';
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
+import 'package:frontend_splatournament_manager/providers/tournament_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +85,12 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
           );
 
           if (!context.mounted) return;
+          await Provider.of<TournamentProvider>(
+            context,
+            listen: false,
+          ).refreshAvailableTournaments();
 
+          if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -413,11 +419,16 @@ class DetailHeader extends StatelessWidget {
             Spacer(),
             Row(
               children: [
-                InputChip(
-                  onPressed: () => onTeamsChipClicked(),
-                  label: Text(
-                    '${tournament.currentTeamAmount} von ${tournament.maxTeamAmount} Teams',
-                  ),
+                Consumer<TournamentProvider>(
+                  builder: (context, value, child){
+                    final currentTournament = value.availableTournaments.firstWhere((t) => t.id == tournament.id);
+                    return InputChip(
+                    onPressed: () => onTeamsChipClicked(),
+                    label: Text(
+                      '${currentTournament.currentTeamAmount} von ${currentTournament.maxTeamAmount} Teams',
+                    ),
+                    );
+                  }
                 ),
               ],
             ),

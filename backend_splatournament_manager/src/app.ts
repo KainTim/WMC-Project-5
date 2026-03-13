@@ -199,6 +199,12 @@ app.post('/tournaments/:id/teams', authMiddleware, async (req: Request, res: Res
         const entry = await teamService.registerTeamForTournament(+req.params.id, +teamId);
         res.status(201).send(entry);
     } catch (err: any) {
+        if (err.message === 'Turnier nicht gefunden') {
+            return res.status(404).send({error: err.message});
+        }
+        if (err.message === 'Das Turnier hat bereits die maximale Anzahl an Teams erreicht') {
+            return res.status(409).send({error: err.message});
+        }
         if (err.message?.includes('UNIQUE constraint failed')) {
             return res.status(409).send({error: 'Das Team ist bereits für dieses Turnier angemeldet'});
         }

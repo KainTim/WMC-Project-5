@@ -145,19 +145,38 @@ export class TeamService {
 
   registerTeamForTournament(tournamentId: number, teamId: number): Promise<TournamentTeam> {
     return new Promise<TournamentTeam>((resolve, reject) => {
-      const stmt = this.db.prepare(
-        `INSERT INTO TournamentTeams (tournamentId, teamId) VALUES (?, ?)`
+      this.db.get(
+        `SELECT t.maxTeamAmount as maxTeamAmount,
+                COUNT(tt.id) as currentTeamAmount
+         FROM Tournaments t
+         LEFT JOIN TournamentTeams tt ON t.id = tt.tournamentId
+         WHERE t.id = ?
+         GROUP BY t.id`,
+        [tournamentId],
+        (err: Error | null, row: any) => {
+          if (err) return reject(err);
+          if (!row) {
+            return reject(new Error('Turnier nicht gefunden'));
+          }
+          if (row.currentTeamAmount >= row.maxTeamAmount) {
+            return reject(new Error('Das Turnier hat bereits die maximale Anzahl an Teams erreicht'));
+          }
+
+          const stmt = this.db.prepare(
+            `INSERT INTO TournamentTeams (tournamentId, teamId) VALUES (?, ?)`
+          );
+          stmt.run(tournamentId, teamId, function (this: RunResult, err: Error | null) {
+            if (err) return reject(err);
+            resolve({
+              id: (this as any).lastID,
+              tournamentId,
+              teamId,
+              registeredAt: new Date().toISOString(),
+            });
+          });
+          stmt.finalize();
+        }
       );
-      stmt.run(tournamentId, teamId, function (this: RunResult, err: Error | null) {
-        if (err) return reject(err);
-        resolve({
-          id: (this as any).lastID,
-          tournamentId,
-          teamId,
-          registeredAt: new Date().toISOString(),
-        });
-      });
-      stmt.finalize();
     });
   }
 

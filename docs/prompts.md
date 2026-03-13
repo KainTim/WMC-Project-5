@@ -192,3 +192,9 @@ Folgende Dateien wurden in diesem Prompt verändert:
 Folgende Dateien wurden in diesem Prompt verändert:
     - backend_splatournament_manager/src/services/match-service.ts
     - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+
+- Add a validation that you can only enter a tournament with at most maxTeams teams.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/services/team-service.ts
+    - backend_splatournament_manager/src/app.ts
+    - docs/prompts.md
