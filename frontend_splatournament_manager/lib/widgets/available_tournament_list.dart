@@ -13,7 +13,7 @@ class AvailableTournamentList extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
       child: Column(
         children: [
-          Row(children: [Text("Available Tournaments")]),
+          const Row(children: [Text('Verfügbare Turniere')]),
           SizedBox(
             width: double.infinity,
             height: 350,
@@ -40,18 +40,21 @@ class TournamentListFutureBuilder extends StatelessWidget {
       future: provider.ensureTournamentsLoaded(),
       builder: (context, snapshot) {
         final list = provider.availableTournaments;
-        print(list);
         if (snapshot.connectionState == ConnectionState.waiting &&
             list.isEmpty) {
           return Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError && list.isEmpty) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Text(
+              'Fehler: ${snapshot.error.toString().replaceFirst('Exception: ', '')}',
+            ),
+          );
         }
 
         if (list.isEmpty) {
-          return Center(child: Text('No tournaments found'));
+          return const Center(child: Text('Keine Turniere gefunden'));
         }
 
         return ListView.builder(

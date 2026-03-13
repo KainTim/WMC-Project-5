@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? "Tournaments" : "Teams"),
+        title: Text(_selectedIndex == 0 ? 'Turniere' : 'Teams'),
         bottom: _selectedIndex == 1
             ? TabBar(
                 controller: _tabController,
@@ -54,8 +54,8 @@ class _HomePageState extends State<HomePage>
                   fontWeight: FontWeight.w500,
                 ),
                 tabs: const [
-                  Tab(text: 'All Teams'),
-                  Tab(text: 'My Teams'),
+                  Tab(text: 'Alle Teams'),
+                  Tab(text: 'Meine Teams'),
                 ],
               )
             : null,
@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage>
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Failed to refresh ${_selectedIndex == 0 ? "tournaments" : "teams"}',
+                      'Aktualisierung der ${_selectedIndex == 0 ? "Turniere" : "Teams"} fehlgeschlagen',
                     ),
                   ),
                 );
@@ -95,7 +95,9 @@ class _HomePageState extends State<HomePage>
             },
             offset: const Offset(0, 48),
             itemBuilder: (context) {
-              return [const PopupMenuItem(value: 1, child: Text("Settings"))];
+              return [
+                const PopupMenuItem(value: 1, child: Text('Einstellungen')),
+              ];
             },
           ),
         ],
@@ -127,7 +129,7 @@ class _HomePageState extends State<HomePage>
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.emoji_events),
-            label: 'Tournaments',
+            label: 'Turniere',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.groups), label: 'Teams'),
         ],

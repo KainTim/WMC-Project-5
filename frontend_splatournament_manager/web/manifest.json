@@ -1,11 +1,11 @@
 {
-    "name": "frontend_splatournament_manager",
-    "short_name": "frontend_splatournament_manager",
+    "name": "Splatournament Manager",
+    "short_name": "Splatournament",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A tournament Manager for Splatoon",
+    "description": "Ein Turnier-Manager für Splatoon",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.tikaiz" "\0"
-            VALUE "FileDescription", "frontend_splatournament_manager" "\0"
+            VALUE "FileDescription", "Splatournament Manager" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "frontend_splatournament_manager" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.tikaiz. All rights reserved." "\0"
             VALUE "OriginalFilename", "frontend_splatournament_manager.exe" "\0"
-            VALUE "ProductName", "frontend_splatournament_manager" "\0"
+            VALUE "ProductName", "Splatournament Manager" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

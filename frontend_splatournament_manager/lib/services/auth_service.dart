@@ -4,7 +4,10 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   final String baseUrl = SplatournamentApp.baseUrl;
-  Future<Map<String, dynamic>> register(String username, String password) async {
+  Future<Map<String, dynamic>> register(
+    String username,
+    String password,
+  ) async {
     final response = await http.post(
       Uri.parse('$baseUrl/register'),
       headers: {'Content-Type': 'application/json'},
@@ -15,7 +18,7 @@ class AuthService {
       return json.decode(response.body);
     } else {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Registration failed');
+      throw Exception(body['error'] ?? 'Registrierung fehlgeschlagen');
     }
   }
 
@@ -30,8 +33,7 @@ class AuthService {
       return json.decode(response.body);
     } else {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Login failed');
+      throw Exception(body['error'] ?? 'Anmeldung fehlgeschlagen');
     }
   }
 }
-

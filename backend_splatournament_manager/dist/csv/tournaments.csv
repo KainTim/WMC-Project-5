@@ -1,4 +1,4 @@
 name,description,maxTeamAmount,currentTeamAmount,registrationStartDate,registrationEndDate
-Demo Tournament  ,This is a demo tournament, 2, 0, 2026-02-01, 2026-02-28
-Demo Tournament 2,This is a second demo tournament, 4, 5, 2026-03-01, 2026-03-15
-Demo Tournament 3,This is a third demo tournament, 8, 8, 2026-03-15, 2026-03-20
+Demo-Turnier,Dies ist ein Demo-Turnier, 2, 0, 2026-02-01, 2026-02-28
+Demo-Turnier 2,Dies ist ein zweites Demo-Turnier, 4, 5, 2026-03-01, 2026-03-15
+Demo-Turnier 3,Dies ist ein drittes Demo-Turnier, 8, 8, 2026-03-15, 2026-03-20

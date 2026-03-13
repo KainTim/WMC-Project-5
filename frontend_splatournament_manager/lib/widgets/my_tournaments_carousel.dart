@@ -38,7 +38,7 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
                 child: Text(
-                  'My Tournaments',
+                  'Meine Turniere',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -58,7 +58,7 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'No tournaments found',
+                          'Keine Turniere gefunden',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ],
@@ -77,7 +77,7 @@ class _MyTournamentsCarouselState extends State<MyTournamentsCarousel> {
             const Padding(
               padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
-                'My Tournaments',
+                'Meine Turniere',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
@@ -162,13 +162,13 @@ class _TournamentCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     tournament.isRegistrationOpen
-                        ? 'Registration Open'
-                        : 'Registration Closed',
+                        ? 'Anmeldung offen'
+                        : 'Anmeldung geschlossen',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const Spacer(),
                   Text(
-                    '${tournament.currentTeamAmount}/${tournament.maxTeamAmount} teams',
+                    '${tournament.currentTeamAmount}/${tournament.maxTeamAmount} Teams',
                     style: const TextStyle(fontSize: 14),
                   ),
                 ],

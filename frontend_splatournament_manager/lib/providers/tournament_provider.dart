@@ -6,7 +6,6 @@ import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:frontend_splatournament_manager/services/api_client.dart';
 
 class TournamentProvider extends ChangeNotifier {
-
   List<Tournament> _availableTournaments = [];
   Future<List<Tournament>>? _initialLoadFuture;
 
@@ -15,7 +14,9 @@ class TournamentProvider extends ChangeNotifier {
   Future<List<Tournament>> _fetchTournaments() async {
     final response = await ApiClient.get('/tournaments');
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load tournaments (${response.statusCode})');
+      throw Exception(
+        'Turniere konnten nicht geladen werden (${response.statusCode})',
+      );
     }
 
     final List<dynamic> list = json.decode(response.body);
@@ -45,19 +46,22 @@ class TournamentProvider extends ChangeNotifier {
     DateTime registrationStartDate,
     DateTime registrationEndDate,
   ) async {
-    final response = await ApiClient.post(
-      '/tournaments',
-      {
-        'name': name,
-        'description': description,
-        'maxTeamAmount': maxTeamAmount,
-        'registrationStartDate': registrationStartDate.toIso8601String().split('T')[0],
-        'registrationEndDate': registrationEndDate.toIso8601String().split('T')[0],
-      },
-    );
+    final response = await ApiClient.post('/tournaments', {
+      'name': name,
+      'description': description,
+      'maxTeamAmount': maxTeamAmount,
+      'registrationStartDate': registrationStartDate.toIso8601String().split(
+        'T',
+      )[0],
+      'registrationEndDate': registrationEndDate.toIso8601String().split(
+        'T',
+      )[0],
+    });
 
     if (response.statusCode != HttpStatus.created) {
-      throw Exception('Failed to create tournament (${response.statusCode})');
+      throw Exception(
+        'Turnier konnte nicht erstellt werden (${response.statusCode})',
+      );
     }
 
     await refreshAvailableTournaments();

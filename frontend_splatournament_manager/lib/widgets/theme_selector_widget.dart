@@ -9,21 +9,21 @@ class ThemeSelectorWidget extends StatelessWidget {
   final List<DropdownMenuItem<AppThemeOption>> dropdownElements = [
     const DropdownMenuItem(
       value: AppThemeOption.lightBlue,
-      child: Text("Light Blue"),
+      child: Text('Helles Blau'),
     ),
     const DropdownMenuItem(
       value: AppThemeOption.darkPurple,
-      child: Text("Dark Purple"),
+      child: Text('Dunkles Lila'),
     ),
     const DropdownMenuItem(
       value: AppThemeOption.lightMint,
-      child: Text("Light Mint"),
+      child: Text('Helles Mint'),
     ),
     const DropdownMenuItem(
       value: AppThemeOption.darkAmber,
-      child: Text("Dark Amber"),
+      child: Text('Dunkles Bernstein'),
     ),
-    const DropdownMenuItem(value: AppThemeOption.system, child: Text("System")),
+    const DropdownMenuItem(value: AppThemeOption.system, child: Text('System')),
   ];
 
   @override
@@ -39,7 +39,7 @@ class ThemeSelectorWidget extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Theme"),
+          const Text('Design'),
           SizedBox(
             width: 250,
             child: DropdownButtonFormField<AppThemeOption>(

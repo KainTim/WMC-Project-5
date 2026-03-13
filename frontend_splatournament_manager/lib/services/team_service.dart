@@ -5,11 +5,12 @@ import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/services/api_client.dart';
 
 class TeamService {
-
   Future<List<Team>> getAllTeams() async {
     final response = await ApiClient.get('/teams');
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load teams (${response.statusCode})');
+      throw Exception(
+        'Teams konnten nicht geladen werden (${response.statusCode})',
+      );
     }
     final List<dynamic> list = json.decode(response.body);
     return list.map((j) => Team.fromJson(j as Map<String, dynamic>)).toList();
@@ -18,10 +19,12 @@ class TeamService {
   Future<Team> getTeamById(int id) async {
     final response = await ApiClient.get('/teams/$id');
     if (response.statusCode == HttpStatus.notFound) {
-      throw Exception('Team not found');
+      throw Exception('Team nicht gefunden');
     }
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load team (${response.statusCode})');
+      throw Exception(
+        'Team konnte nicht geladen werden (${response.statusCode})',
+      );
     }
     return Team.fromJson(json.decode(response.body) as Map<String, dynamic>);
   }
@@ -31,13 +34,14 @@ class TeamService {
     required String tag,
     String description = '',
   }) async {
-    final response = await ApiClient.post(
-      '/teams',
-      {'name': name, 'tag': tag, 'description': description},
-    );
+    final response = await ApiClient.post('/teams', {
+      'name': name,
+      'tag': tag,
+      'description': description,
+    });
     if (response.statusCode != HttpStatus.created) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to create team');
+      throw Exception(body['error'] ?? 'Team konnte nicht erstellt werden');
     }
     return Team.fromJson(json.decode(response.body) as Map<String, dynamic>);
   }
@@ -48,17 +52,14 @@ class TeamService {
     String? tag,
     String? description,
   }) async {
-    final response = await ApiClient.put(
-      '/teams/$id',
-      {
-        if (name != null) 'name': name,
-        if (tag != null) 'tag': tag,
-        if (description != null) 'description': description,
-      },
-    );
+    final response = await ApiClient.put('/teams/$id', {
+      'name': name,
+      'tag': tag,
+      'description': description,
+    });
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to update team');
+      throw Exception(body['error'] ?? 'Team konnte nicht aktualisiert werden');
     }
   }
 
@@ -66,7 +67,7 @@ class TeamService {
     final response = await ApiClient.delete('/teams/$id');
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to delete team');
+      throw Exception(body['error'] ?? 'Team konnte nicht gelöscht werden');
     }
   }
 
@@ -74,7 +75,7 @@ class TeamService {
     final response = await ApiClient.get('/tournaments/$tournamentId/teams');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception(
-        'Failed to load teams for tournament (${response.statusCode})',
+        'Teams für das Turnier konnten nicht geladen werden (${response.statusCode})',
       );
     }
     final List<dynamic> list = json.decode(response.body);
@@ -82,24 +83,29 @@ class TeamService {
   }
 
   Future<void> registerTeamForTournament(int tournamentId, int teamId) async {
-    final response = await ApiClient.post(
-      '/tournaments/$tournamentId/teams',
-      {'teamId': teamId},
-    );
+    final response = await ApiClient.post('/tournaments/$tournamentId/teams', {
+      'teamId': teamId,
+    });
     if (response.statusCode == 409) {
-      throw Exception('Team is already registered for this tournament');
+      throw Exception('Das Team ist bereits für dieses Turnier angemeldet');
     }
     if (response.statusCode != HttpStatus.created) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to register team');
+      throw Exception(
+        body['error'] ?? 'Team konnte nicht für das Turnier angemeldet werden',
+      );
     }
   }
 
   Future<void> removeTeamFromTournament(int tournamentId, int teamId) async {
-    final response = await ApiClient.delete('/tournaments/$tournamentId/teams/$teamId');
+    final response = await ApiClient.delete(
+      '/tournaments/$tournamentId/teams/$teamId',
+    );
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to remove team from tournament');
+      throw Exception(
+        body['error'] ?? 'Team konnte nicht aus dem Turnier entfernt werden',
+      );
     }
   }
 
@@ -107,7 +113,7 @@ class TeamService {
     final response = await ApiClient.get('/teams/$teamId/tournaments');
     if (response.statusCode != HttpStatus.ok) {
       throw Exception(
-        'Failed to load tournaments for team (${response.statusCode})',
+        'Turniere für das Team konnten nicht geladen werden (${response.statusCode})',
       );
     }
     final List<dynamic> list = json.decode(response.body);
@@ -117,7 +123,9 @@ class TeamService {
   Future<List<Team>> getUserTeams() async {
     final response = await ApiClient.get('/users/me/teams');
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load user teams (${response.statusCode})');
+      throw Exception(
+        'Eigene Teams konnten nicht geladen werden (${response.statusCode})',
+      );
     }
     final List<dynamic> list = json.decode(response.body);
     return list.map((j) => Team.fromJson(j as Map<String, dynamic>)).toList();
@@ -126,11 +134,11 @@ class TeamService {
   Future<void> joinTeam(int teamId) async {
     final response = await ApiClient.post('/teams/$teamId/members', {});
     if (response.statusCode == 409) {
-      throw Exception('You are already a member of this team');
+      throw Exception('Du bist bereits Mitglied dieses Teams');
     }
     if (response.statusCode != HttpStatus.created) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to join team');
+      throw Exception(body['error'] ?? 'Beitritt zum Team fehlgeschlagen');
     }
   }
 
@@ -138,14 +146,16 @@ class TeamService {
     final response = await ApiClient.delete('/teams/$teamId/members/me');
     if (response.statusCode != HttpStatus.ok) {
       final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Failed to leave team');
+      throw Exception(body['error'] ?? 'Team konnte nicht verlassen werden');
     }
   }
 
   Future<List<Map<String, dynamic>>> getTeamMembers(int teamId) async {
     final response = await ApiClient.get('/teams/$teamId/members');
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load team members (${response.statusCode})');
+      throw Exception(
+        'Teammitglieder konnten nicht geladen werden (${response.statusCode})',
+      );
     }
     final List<dynamic> list = json.decode(response.body);
     return list.cast<Map<String, dynamic>>();

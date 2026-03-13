@@ -3,7 +3,14 @@ import 'package:frontend_splatournament_manager/models/team.dart';
 import 'package:frontend_splatournament_manager/models/tournament.dart';
 import 'package:frontend_splatournament_manager/pages/tournament_bracket_page.dart';
 import 'package:frontend_splatournament_manager/providers/team_provider.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+final DateFormat _tournamentDateFormat = DateFormat('dd.MM.yyyy', 'de_DE');
+
+String _formatTournamentDate(String value) {
+  return _tournamentDateFormat.format(DateTime.parse(value));
+}
 
 class TournamentDetailPage extends StatefulWidget {
   final Tournament tournament;
@@ -29,7 +36,7 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'You are not a member of any team. Join or create a team first!',
+              'Du bist in keinem Team. Tritt zuerst einem Team bei oder erstelle eines.',
             ),
           ),
         );
@@ -40,7 +47,7 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
         context: context,
         builder: (BuildContext dialogContext) {
           return AlertDialog(
-            title: const Text('Select Your Team'),
+            title: const Text('Team auswählen'),
             content: SizedBox(
               width: double.maxFinite,
               child: ListView.builder(
@@ -62,7 +69,7 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
+                child: const Text('Abbrechen'),
               ),
             ],
           );
@@ -80,7 +87,9 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${selectedTeam.name} joined the tournament!'),
+              content: Text(
+                '${selectedTeam.name} wurde für das Turnier angemeldet.',
+              ),
             ),
           );
 
@@ -93,7 +102,7 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Failed to join: ${e.toString().replaceAll('Exception: ', '')}',
+                'Anmeldung fehlgeschlagen: ${e.toString().replaceAll('Exception: ', '')}',
               ),
             ),
           );
@@ -101,9 +110,13 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
       }
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to load your teams: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Deine Teams konnten nicht geladen werden: ${e.toString().replaceFirst('Exception: ', '')}',
+          ),
+        ),
+      );
     }
   }
 
@@ -161,10 +174,10 @@ class _TournamentDetailPageState extends State<TournamentDetailPage> {
                     : null,
                 child: Text(
                   widget.tournament.isRegistrationFuture
-                      ? "Registration not open yet"
+                      ? 'Anmeldung noch nicht geöffnet'
                       : widget.tournament.isRegistrationPast
-                      ? "Registration closed"
-                      : "Join with Team",
+                      ? 'Anmeldung geschlossen'
+                      : 'Mit Team anmelden',
                 ),
               ),
             ),
@@ -205,7 +218,7 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: Text(
-              'Registered Teams',
+              'Angemeldete Teams',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
             ),
           ),
@@ -217,11 +230,17 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
                   return Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(
+                    child: Text(
+                      'Fehler: ${snapshot.error.toString().replaceFirst('Exception: ', '')}',
+                    ),
+                  );
                 }
                 final teams = snapshot.data ?? [];
                 if (teams.isEmpty) {
-                  return Center(child: Text('No teams registered yet.'));
+                  return const Center(
+                    child: Text('Noch keine Teams angemeldet.'),
+                  );
                 }
                 return ListView.builder(
                   itemCount: teams.length,
@@ -257,7 +276,9 @@ class _TournamentTeamsWidgetState extends State<TournamentTeamsWidget> {
                             if (!context.mounted) return;
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Failed to remove team: $e'),
+                                content: Text(
+                                  'Team konnte nicht entfernt werden: ${e.toString().replaceFirst('Exception: ', '')}',
+                                ),
                               ),
                             );
                           }
@@ -282,6 +303,9 @@ class TournamentContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final registrationPeriod =
+        '${_formatTournamentDate(tournament.registrationStartDate)} - ${_formatTournamentDate(tournament.registrationEndDate)}';
+
     return Expanded(
       child: Column(
         children: [
@@ -300,24 +324,22 @@ class TournamentContentWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Registration Period",
+                      'Anmeldezeitraum',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
                       ),
                     ),
-                    Text(
-                      "${tournament.registrationStartDate} - ${tournament.registrationEndDate}",
-                    ),
+                    Text(registrationPeriod),
                     SizedBox(height: 24),
                     Text(
-                      "Format",
+                      'Format',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 17,
                       ),
                     ),
-                    Text("Single Elimination"),
+                    const Text('Einfaches K.-o.-System'),
                     Spacer(),
                     SizedBox(
                       width: double.infinity,
@@ -331,7 +353,7 @@ class TournamentContentWidget extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Text("View ongoing"),
+                        child: const Text('Turnierbaum ansehen'),
                       ),
                     ),
                   ],
@@ -382,7 +404,7 @@ class DetailHeader extends StatelessWidget {
                 InputChip(
                   onPressed: () => onTeamsChipClicked(),
                   label: Text(
-                    "${tournament.currentTeamAmount} out of ${tournament.maxTeamAmount} Teams",
+                    '${tournament.currentTeamAmount} von ${tournament.maxTeamAmount} Teams',
                   ),
                 ),
               ],

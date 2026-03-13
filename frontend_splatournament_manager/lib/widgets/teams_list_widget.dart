@@ -18,21 +18,27 @@ class TeamsListWidget extends StatelessWidget {
             builder: (context, snapshot) {
               final teams = provider.teams;
 
-              if (snapshot.connectionState == ConnectionState.waiting && teams.isEmpty) {
+              if (snapshot.connectionState == ConnectionState.waiting &&
+                  teams.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               }
 
               if (snapshot.hasError && teams.isEmpty) {
-                return Center(child: Text('Error: ${snapshot.error}'));
+                return Center(
+                  child: Text(
+                    'Fehler: ${snapshot.error.toString().replaceFirst('Exception: ', '')}',
+                  ),
+                );
               }
 
               if (teams.isEmpty) {
-                return const Center(child: Text('No teams found'));
+                return const Center(child: Text('Keine Teams gefunden'));
               }
 
               return ListView.builder(
                 itemCount: teams.length,
-                itemBuilder: (context, index) => TeamListItem(team: teams[index]),
+                itemBuilder: (context, index) =>
+                    TeamListItem(team: teams[index]),
               );
             },
           );
@@ -49,11 +55,13 @@ class TeamListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final memberCountText = team.memberCount != null 
-        ? '${team.memberCount}/4 members'
-        : 'No members';
-    final description = team.description.isEmpty ? 'No description' : team.description;
-    
+    final memberCountText = team.memberCount != null
+        ? '${team.memberCount}/4 Mitglieder'
+        : 'Keine Mitglieder';
+    final description = team.description.isEmpty
+        ? 'Keine Beschreibung'
+        : team.description;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -66,11 +74,11 @@ class TeamListItem extends StatelessWidget {
         trailing: PopupMenuButton(
           icon: const Icon(Icons.more_vert),
           itemBuilder: (context) => [
-            const PopupMenuItem(value: 'join', child: Text('Join Team')),
-            const PopupMenuItem(value: 'edit', child: Text('Edit Team')),
+            const PopupMenuItem(value: 'join', child: Text('Team beitreten')),
+            const PopupMenuItem(value: 'edit', child: Text('Team bearbeiten')),
             const PopupMenuItem(
               value: 'delete',
-              child: Text('Delete Team', style: TextStyle(color: Colors.red)),
+              child: Text('Team löschen', style: TextStyle(color: Colors.red)),
             ),
           ],
           onSelected: (value) async {
@@ -98,7 +106,7 @@ class TeamListItem extends StatelessWidget {
       await Provider.of<TeamProvider>(context, listen: false).joinTeam(team.id);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Joined ${team.name}!')),
+          SnackBar(content: Text('Du bist ${team.name} beigetreten.')),
         );
       }
     } catch (e) {
@@ -114,16 +122,18 @@ class TeamListItem extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Team?'),
-        content: Text('Delete "${team.name}"? This cannot be undone.'),
+        title: const Text('Team löschen?'),
+        content: Text(
+          'Soll "${team.name}" gelöscht werden? Das kann nicht rückgängig gemacht werden.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Abbrechen'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Löschen', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -131,16 +141,23 @@ class TeamListItem extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       try {
-        await Provider.of<TeamProvider>(context, listen: false).deleteTeam(team.id);
+        await Provider.of<TeamProvider>(
+          context,
+          listen: false,
+        ).deleteTeam(team.id);
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Team deleted')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Team gelöscht')));
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+            SnackBar(
+              content: Text(
+                'Fehler: ${e.toString().replaceFirst('Exception: ', '')}',
+              ),
+            ),
           );
         }
       }

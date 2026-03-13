@@ -74,12 +74,12 @@ export class UserService {
                         return reject(err);
                     }
                     if (!user) {
-                        return reject(new Error('User not found'));
+                        return reject(new Error('Benutzer nicht gefunden'));
                     }
                     try {
                         const valid = await argon2.verify(user.password, password);
                         if (!valid) {
-                            return reject(new Error('Invalid password'));
+                            return reject(new Error('Ungültiges Passwort'));
                         }
                         const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
                         resolve({ id: user.id, username: user.username, token });

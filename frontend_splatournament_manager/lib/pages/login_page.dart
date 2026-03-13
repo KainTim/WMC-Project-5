@@ -66,13 +66,13 @@ class _LoginPageState extends State<LoginPage> {
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
-                      labelText: 'Username',
+                      labelText: 'Benutzername',
                       prefixIcon: Icon(Icons.person),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a username';
+                        return 'Bitte gib einen Benutzernamen ein';
                       }
                       return null;
                     },
@@ -82,16 +82,16 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _passwordController,
                     obscureText: true,
                     decoration: const InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Passwort',
                       prefixIcon: Icon(Icons.lock),
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a password';
+                        return 'Bitte gib ein Passwort ein';
                       }
                       if (_isRegistering && value.trim().length < 4) {
-                        return 'Password must be at least 6 characters';
+                        return 'Das Passwort muss mindestens 4 Zeichen lang sein';
                       }
                       return null;
                     },
@@ -124,9 +124,13 @@ class _LoginPageState extends State<LoginPage> {
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
-                            : Text(_isRegistering ? 'Register' : 'Login'),
+                            : Text(
+                                _isRegistering ? 'Registrieren' : 'Anmelden',
+                              ),
                       );
                     },
                   ),
@@ -141,8 +145,8 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: Text(
                       _isRegistering
-                          ? 'Already have an account? Login'
-                          : 'Don\'t have an account? Register',
+                          ? 'Bereits ein Konto? Anmelden'
+                          : 'Noch kein Konto? Registrieren',
                     ),
                   ),
                 ],
@@ -154,4 +158,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

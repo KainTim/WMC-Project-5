@@ -22,12 +22,13 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
 
   bool _isLoading = false;
 
-  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
+  final DateFormat _dateFormat = DateFormat('dd.MM.yyyy', 'de_DE');
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
     final initialDate = DateTime.now();
     final picked = await showDatePicker(
       context: context,
+      locale: const Locale('de', 'DE'),
       initialDate: initialDate,
       firstDate: initialDate,
       lastDate: DateTime(2101),
@@ -47,14 +48,20 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select both start and end dates.')),
+        const SnackBar(
+          content: Text(
+            'Bitte wähle sowohl ein Start- als auch ein Enddatum aus.',
+          ),
+        ),
       );
       return;
     }
 
     if (_endDate!.isBefore(_startDate!)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('End date cannot be before start date.')),
+        const SnackBar(
+          content: Text('Das Enddatum darf nicht vor dem Startdatum liegen.'),
+        ),
       );
       return;
     }
@@ -70,15 +77,19 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
         _startDate!,
         _endDate!,
       );
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Fehler: ${e.toString().replaceFirst('Exception: ', '')}',
+          ),
+        ),
+      );
     } finally {
-      if (context.mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -92,7 +103,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Tournament')),
+      appBar: AppBar(title: const Text('Turnier erstellen')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -104,20 +115,20 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Pflichtfeld' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Beschreibung'),
                 maxLines: 3,
                 validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+                    value == null || value.isEmpty ? 'Pflichtfeld' : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<int>(
                 initialValue: _maxTeamAmount,
-                decoration: const InputDecoration(labelText: 'Max Teams'),
+                decoration: const InputDecoration(labelText: 'Maximale Teams'),
                 items: [2, 4, 8].map((int value) {
                   return DropdownMenuItem<int>(
                     value: value,
@@ -140,7 +151,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                       onPressed: () => _selectDate(context, true),
                       child: Text(
                         _startDate == null
-                            ? 'Select Start Date'
+                            ? 'Startdatum wählen'
                             : 'Start: ${_dateFormat.format(_startDate!)}',
                       ),
                     ),
@@ -151,8 +162,8 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                       onPressed: () => _selectDate(context, false),
                       child: Text(
                         _endDate == null
-                            ? 'Select End Date'
-                            : 'End: ${_dateFormat.format(_endDate!)}',
+                            ? 'Enddatum wählen'
+                            : 'Ende: ${_dateFormat.format(_endDate!)}',
                       ),
                     ),
                   ),
@@ -163,7 +174,7 @@ class _CreateTournamentPageState extends State<CreateTournamentPage> {
                 onPressed: _isLoading ? null : _submitForm,
                 child: _isLoading
                     ? const CircularProgressIndicator()
-                    : const Text('Create Tournament'),
+                    : const Text('Turnier erstellen'),
               ),
             ],
           ),

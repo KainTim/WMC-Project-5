@@ -110,3 +110,41 @@ Folgende Dateien wurden in diesem Prompt verändert:
     - frontend_splatournament_manager/lib/providers/match_provider.dart (neu erstellt)
     - frontend_splatournament_manager/lib/main.dart
     - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+
+## 13.03.2026
+
+- Translate the entire app into German, and also translate the relevant DB seeding CSVs.   
+Folgende Dateien wurden in diesem Prompt verändert:
+    - backend_splatournament_manager/src/app.ts
+    - backend_splatournament_manager/src/middlewares/auth-middleware.ts
+    - backend_splatournament_manager/src/services/user-service.ts
+    - backend_splatournament_manager/src/services/team-service.ts
+    - backend_splatournament_manager/src/services/match-service.ts
+    - backend_splatournament_manager/dist/csv/teams.csv
+    - backend_splatournament_manager/dist/csv/tournaments.csv
+    - frontend_splatournament_manager/pubspec.yaml
+    - frontend_splatournament_manager/lib/main.dart
+    - frontend_splatournament_manager/lib/pages/login_page.dart
+    - frontend_splatournament_manager/lib/pages/home_page.dart
+    - frontend_splatournament_manager/lib/pages/create_team_page.dart
+    - frontend_splatournament_manager/lib/pages/create_tournament_page.dart
+    - frontend_splatournament_manager/lib/pages/settings_page.dart
+    - frontend_splatournament_manager/lib/pages/tournament_detail_page.dart
+    - frontend_splatournament_manager/lib/pages/tournament_bracket_page.dart
+    - frontend_splatournament_manager/lib/providers/tournament_provider.dart
+    - frontend_splatournament_manager/lib/providers/match_provider.dart
+    - frontend_splatournament_manager/lib/services/auth_service.dart
+    - frontend_splatournament_manager/lib/services/team_service.dart
+    - frontend_splatournament_manager/lib/widgets/available_tournament_list.dart
+    - frontend_splatournament_manager/lib/widgets/profile_widget.dart
+    - frontend_splatournament_manager/lib/widgets/teams_list_widget.dart
+    - frontend_splatournament_manager/lib/widgets/theme_selector_widget.dart
+    - frontend_splatournament_manager/lib/widgets/my_teams_widget.dart
+    - frontend_splatournament_manager/lib/widgets/my_tournaments_carousel.dart
+    - frontend_splatournament_manager/web/index.html
+    - frontend_splatournament_manager/web/manifest.json
+    - frontend_splatournament_manager/android/app/src/main/AndroidManifest.xml
+    - frontend_splatournament_manager/ios/Runner/Info.plist
+    - frontend_splatournament_manager/linux/runner/my_application.cc
+    - frontend_splatournament_manager/windows/runner/main.cpp
+    - frontend_splatournament_manager/windows/runner/Runner.rc

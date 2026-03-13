@@ -7,20 +7,27 @@ import 'package:frontend_splatournament_manager/services/api_client.dart';
 
 class MatchProvider extends ChangeNotifier {
   Future<void> initializeBracket(int tournamentId) async {
-    final response = await ApiClient.post('/tournaments/$tournamentId/bracket', {});
-    
+    final response = await ApiClient.post(
+      '/tournaments/$tournamentId/bracket',
+      {},
+    );
+
     if (response.statusCode != HttpStatus.created) {
-      throw Exception('Failed to initialize bracket (${response.statusCode})');
+      throw Exception(
+        'Turnierbaum konnte nicht initialisiert werden (${response.statusCode})',
+      );
     }
-    
+
     notifyListeners();
   }
 
   Future<List<Match>> getMatchesByTournament(int tournamentId) async {
     final response = await ApiClient.get('/tournaments/$tournamentId/matches');
-    
+
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to load matches (${response.statusCode})');
+      throw Exception(
+        'Matches konnten nicht geladen werden (${response.statusCode})',
+      );
     }
 
     final List<dynamic> list = json.decode(response.body);
@@ -34,9 +41,11 @@ class MatchProvider extends ChangeNotifier {
 
     if (response.statusCode != HttpStatus.ok) {
       final error = json.decode(response.body);
-      throw Exception(error['error'] ?? 'Failed to set winner');
+      throw Exception(
+        error['error'] ?? 'Sieger konnte nicht festgelegt werden',
+      );
     }
-    
+
     notifyListeners();
   }
 
@@ -44,9 +53,11 @@ class MatchProvider extends ChangeNotifier {
     final response = await ApiClient.delete('/matches/$matchId/winner');
 
     if (response.statusCode != HttpStatus.ok) {
-      throw Exception('Failed to reset match (${response.statusCode})');
+      throw Exception(
+        'Match konnte nicht zurückgesetzt werden (${response.statusCode})',
+      );
     }
-    
+
     notifyListeners();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:frontend_splatournament_manager/pages/home_page.dart';
 import 'package:frontend_splatournament_manager/pages/login_page.dart';
 import 'package:frontend_splatournament_manager/pages/settings_page.dart';
@@ -34,6 +35,13 @@ class SplatournamentApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Splatournament Manager',
       routerConfig: routes,
+      locale: const Locale('de', 'DE'),
+      supportedLocales: const [Locale('de', 'DE')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       themeMode: themeProvider.themeMode,
       theme: themeProvider.lightTheme,
       darkTheme: themeProvider.darkTheme,

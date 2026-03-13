@@ -17,11 +17,11 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Splatournament")),
+      appBar: AppBar(title: const Text('Einstellungen')),
       body: Column(
         children: [
-          SizedBox(height: 24),
-          ProfileWidget(),
+          const SizedBox(height: 24),
+          const ProfileWidget(),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -29,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ListTile(
                 leading: const Icon(Icons.logout, color: Colors.red),
                 title: const Text(
-                  'Sign Out',
+                  'Abmelden',
                   style: TextStyle(color: Colors.red),
                 ),
                 onTap: () {

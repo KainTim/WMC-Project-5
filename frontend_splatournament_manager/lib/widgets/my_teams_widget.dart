@@ -20,7 +20,10 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
   }
 
   void _loadMyTeams() {
-    _myTeamsFuture = Provider.of<TeamProvider>(context, listen: false).getUserTeams();
+    _myTeamsFuture = Provider.of<TeamProvider>(
+      context,
+      listen: false,
+    ).getUserTeams();
   }
 
   @override
@@ -33,13 +36,19 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
         }
 
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(
+            child: Text(
+              'Fehler: ${snapshot.error.toString().replaceFirst('Exception: ', '')}',
+            ),
+          );
         }
 
         final teams = snapshot.data ?? [];
         if (teams.isEmpty) {
           return const Center(
-            child: Text('You are not in any teams yet\nJoin teams from the All Teams tab'),
+            child: Text(
+              'Du bist noch in keinem Team.\nTritt einem Team im Tab Alle Teams bei.',
+            ),
           );
         }
 
@@ -53,11 +62,13 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
   }
 
   Widget _buildTeamCard(Team team) {
-    final memberCountText = team.memberCount != null 
-        ? '${team.memberCount}/4 members'
-        : 'No members';
-    final description = team.description.isEmpty ? 'No description' : team.description;
-    
+    final memberCountText = team.memberCount != null
+        ? '${team.memberCount}/4 Mitglieder'
+        : 'Keine Mitglieder';
+    final description = team.description.isEmpty
+        ? 'Keine Beschreibung'
+        : team.description;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -79,16 +90,16 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Leave Team?'),
-        content: Text('Leave "${team.name}"?'),
+        title: const Text('Team verlassen?'),
+        content: Text('Soll "${team.name}" verlassen werden?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Abbrechen'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Leave', style: TextStyle(color: Colors.red)),
+            child: const Text('Verlassen', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -96,18 +107,25 @@ class _MyTeamsWidgetState extends State<MyTeamsWidget> {
 
     if (confirmed == true && mounted) {
       try {
-        await Provider.of<TeamProvider>(context, listen: false).leaveTeam(team.id);
+        await Provider.of<TeamProvider>(
+          context,
+          listen: false,
+        ).leaveTeam(team.id);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Left team')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Team verlassen')));
           _loadMyTeams();
           setState(() {});
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+            SnackBar(
+              content: Text(
+                'Fehler: ${e.toString().replaceFirst('Exception: ', '')}',
+              ),
+            ),
           );
         }
       }

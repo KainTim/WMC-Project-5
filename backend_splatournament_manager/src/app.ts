@@ -37,7 +37,7 @@ app.get('/tournaments', async (req: Request, res: Response) => {
 app.get('/tournaments/:id', async (req: Request, res: Response) => {
     const tournament = await tournamentService.getTournamentById(+req.params.id);
     if (!tournament) {
-        return res.status(404).send({error: 'Tournament not found'});
+        return res.status(404).send({error: 'Turnier nicht gefunden'});
     }
     res.send(tournament);
 });
@@ -48,7 +48,7 @@ app.post('/tournaments', authMiddleware, async (req: Request, res: Response) => 
         res.status(201).send();
     } catch (err){
         console.log(err);
-        res.status(400).send({error: 'Failed to create tournament'});
+        res.status(400).send({error: 'Turnier konnte nicht erstellt werden'});
     }
 });
 
@@ -56,18 +56,18 @@ app.put('/tournaments/:id', authMiddleware, async (req: Request, res: Response) 
     try {
         await tournamentService.updateTournament(+req.params.id, req.body);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to update Tournament'});
+        return res.status(400).send({error: 'Turnier konnte nicht aktualisiert werden'});
     }
-    res.status(200).send({message: 'Tournament updated successfully'});
+    res.status(200).send({message: 'Turnier erfolgreich aktualisiert'});
 });
 
 app.delete('/tournaments/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await tournamentService.deleteTournament(+req.params.id);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to delete Tournament'});
+        return res.status(400).send({error: 'Turnier konnte nicht gelöscht werden'});
     }
-    res.status(200).send({message: 'Tournament deleted successfully'});
+    res.status(200).send({message: 'Turnier erfolgreich gelöscht'});
 });
 
 app.post('/tournaments/:id/bracket', authMiddleware, async (req: Request, res: Response) => {
@@ -77,14 +77,14 @@ app.post('/tournaments/:id/bracket', authMiddleware, async (req: Request, res: R
         const teamIds = teams.map(team => team.id);
         
         if (teamIds.length < 2) {
-            return res.status(400).send({error: 'At least 2 teams are required to initialize bracket'});
+            return res.status(400).send({error: 'Mindestens 2 Teams sind erforderlich, um den Turnierbaum zu initialisieren'});
         }
         
         await matchService.initializeBracket(tournamentId, teamIds);
-        res.status(201).send({message: 'Bracket initialized successfully'});
+        res.status(201).send({message: 'Turnierbaum erfolgreich initialisiert'});
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to initialize bracket'});
+        res.status(400).send({error: 'Turnierbaum konnte nicht initialisiert werden'});
     }
 });
 
@@ -94,7 +94,7 @@ app.get('/tournaments/:id/matches', async (req: Request, res: Response) => {
         res.send(matches);
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to get matches'});
+        res.status(400).send({error: 'Matches konnten nicht geladen werden'});
     }
 });
 
@@ -102,23 +102,23 @@ app.put('/matches/:id/winner', authMiddleware, async (req: Request, res: Respons
     try {
         const {winnerId} = req.body;
         if (!winnerId) {
-            return res.status(400).send({error: 'winnerId is required'});
+            return res.status(400).send({error: 'winnerId ist erforderlich'});
         }
         await matchService.setMatchWinner(+req.params.id, +winnerId);
-        res.status(200).send({message: 'Winner set successfully'});
+        res.status(200).send({message: 'Sieger erfolgreich festgelegt'});
     } catch (err: any) {
         console.log(err);
-        res.status(400).send({error: err.message || 'Failed to set winner'});
+        res.status(400).send({error: err.message || 'Sieger konnte nicht festgelegt werden'});
     }
 });
 
 app.delete('/matches/:id/winner', authMiddleware, async (req: Request, res: Response) => {
     try {
         await matchService.resetMatch(+req.params.id);
-        res.status(200).send({message: 'Match reset successfully'});
+        res.status(200).send({message: 'Match erfolgreich zurückgesetzt'});
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to reset match'});
+        res.status(400).send({error: 'Match konnte nicht zurückgesetzt werden'});
     }
 });
 
@@ -130,7 +130,7 @@ app.get('/teams', async (req: Request, res: Response) => {
 app.get('/teams/:id', async (req: Request, res: Response) => {
     const team = await teamService.getTeamById(+req.params.id);
     if (!team) {
-        return res.status(404).send({error: 'Team not found'});
+        return res.status(404).send({error: 'Team nicht gefunden'});
     }
     res.send(team);
 });
@@ -138,10 +138,10 @@ app.get('/teams/:id', async (req: Request, res: Response) => {
 app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
     const {name, tag, description} = req.body;
     if (!name || !tag) {
-        return res.status(400).send({error: 'name and tag are required'});
+        return res.status(400).send({error: 'Name und Kürzel sind erforderlich'});
     }
     if (tag.length > 3) {
-        return res.status(400).send({error: 'tag must be at most 3 characters'});
+        return res.status(400).send({error: 'Das Kürzel darf höchstens 3 Zeichen lang sein'});
     }
     try {
         const team = await teamService.addTeam({name, tag, description: description ?? ''});
@@ -151,30 +151,30 @@ app.post('/teams', authMiddleware, async (req: Request, res: Response) => {
         res.status(201).send(team);
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to create team'});
+        res.status(400).send({error: 'Team konnte nicht erstellt werden'});
     }
 });
 
 app.put('/teams/:id', authMiddleware, async (req: Request, res: Response) => {
     const {tag} = req.body;
     if (tag && tag.length > 3) {
-        return res.status(400).send({error: 'tag must be at most 3 characters'});
+        return res.status(400).send({error: 'Das Kürzel darf höchstens 3 Zeichen lang sein'});
     }
     try {
         await teamService.updateTeam(+req.params.id, req.body);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to update team'});
+        return res.status(400).send({error: 'Team konnte nicht aktualisiert werden'});
     }
-    res.status(200).send({message: 'Team updated successfully'});
+    res.status(200).send({message: 'Team erfolgreich aktualisiert'});
 });
 
 app.delete('/teams/:id', authMiddleware, async (req: Request, res: Response) => {
     try {
         await teamService.deleteTeam(+req.params.id);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to delete team'});
+        return res.status(400).send({error: 'Team konnte nicht gelöscht werden'});
     }
-    res.status(200).send({message: 'Team deleted successfully'});
+    res.status(200).send({message: 'Team erfolgreich gelöscht'});
 });
 
 app.get('/tournaments/:id/teams', async (req: Request, res: Response) => {
@@ -185,16 +185,16 @@ app.get('/tournaments/:id/teams', async (req: Request, res: Response) => {
 app.post('/tournaments/:id/teams', authMiddleware, async (req: Request, res: Response) => {
     const {teamId} = req.body;
     if (!teamId) {
-        return res.status(400).send({error: 'teamId is required'});
+        return res.status(400).send({error: 'teamId ist erforderlich'});
     }
     try {
         const entry = await teamService.registerTeamForTournament(+req.params.id, +teamId);
         res.status(201).send(entry);
     } catch (err: any) {
         if (err.message?.includes('UNIQUE constraint failed')) {
-            return res.status(409).send({error: 'Team is already registered for this tournament'});
+            return res.status(409).send({error: 'Das Team ist bereits für dieses Turnier angemeldet'});
         }
-        res.status(400).send({error: 'Failed to register team'});
+        res.status(400).send({error: 'Team konnte nicht für das Turnier angemeldet werden'});
     }
 });
 
@@ -202,9 +202,9 @@ app.delete('/tournaments/:id/teams/:teamId', authMiddleware, async (req: Request
     try {
         await teamService.removeTeamFromTournament(+req.params.id, +req.params.teamId);
     } catch (err) {
-        return res.status(400).send({error: 'Failed to remove team from tournament'});
+        return res.status(400).send({error: 'Team konnte nicht aus dem Turnier entfernt werden'});
     }
-    res.status(200).send({message: 'Team removed from tournament'});
+    res.status(200).send({message: 'Team aus dem Turnier entfernt'});
 });
 
 app.get('/teams/:id/tournaments', async (req: Request, res: Response) => {
@@ -220,7 +220,7 @@ app.get('/users/me/teams', authMiddleware, async (req: Request, res: Response) =
         res.send(teams);
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to get user teams'});
+        res.status(400).send({error: 'Eigene Teams konnten nicht geladen werden'});
     }
 });
 
@@ -232,14 +232,14 @@ app.post('/teams/:id/members', authMiddleware, async (req: Request, res: Respons
         
         const isInTeam = await teamService.isUserInTeam(teamId, userId);
         if (isInTeam) {
-            return res.status(409).send({error: 'User is already a member of this team'});
+            return res.status(409).send({error: 'Du bist bereits Mitglied dieses Teams'});
         }
         
         const member = await teamService.addTeamMember(teamId, userId, 'member');
         res.status(201).send(member);
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to join team'});
+        res.status(400).send({error: 'Beitritt zum Team fehlgeschlagen'});
     }
 });
 
@@ -249,10 +249,10 @@ app.delete('/teams/:id/members/me', authMiddleware, async (req: Request, res: Re
         const userId = req.user.id;
         const teamId = +req.params.id;
         await teamService.removeTeamMember(teamId, userId);
-        res.status(200).send({message: 'Left team successfully'});
+        res.status(200).send({message: 'Team erfolgreich verlassen'});
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to leave team'});
+        res.status(400).send({error: 'Team konnte nicht verlassen werden'});
     }
 });
 
@@ -262,36 +262,36 @@ app.get('/teams/:id/members', async (req: Request, res: Response) => {
         res.send(members);
     } catch (err) {
         console.log(err);
-        res.status(400).send({error: 'Failed to get team members'});
+        res.status(400).send({error: 'Teammitglieder konnten nicht geladen werden'});
     }
 });
 
 app.post('/register', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).send({ error: 'Username and password are required' });
+        return res.status(400).send({ error: 'Benutzername und Passwort sind erforderlich' });
     }
     try {
         const user = await userService.register(username, password);
         res.status(201).send(user);
     } catch (err: any) {
         if (err.message?.includes('UNIQUE constraint failed')) {
-            return res.status(409).send({ error: 'Username already exists' });
+            return res.status(409).send({ error: 'Benutzername existiert bereits' });
         }
-        res.status(500).send({ error: 'Registration failed' });
+        res.status(500).send({ error: 'Registrierung fehlgeschlagen' });
     }
 });
 
 app.post('/login', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).send({ error: 'Username and password are required' });
+        return res.status(400).send({ error: 'Benutzername und Passwort sind erforderlich' });
     }
     try {
         const user = await userService.login(username, password);
         res.status(200).send(user);
     } catch (err: any) {
-        res.status(401).send({ error: err.message || 'Login failed' });
+        res.status(401).send({ error: err.message || 'Anmeldung fehlgeschlagen' });
     }
 });
 

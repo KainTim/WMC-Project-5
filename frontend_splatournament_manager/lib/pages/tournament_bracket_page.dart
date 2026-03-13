@@ -35,13 +35,19 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
       if (mounted) {
         setState(() {});
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bracket initialized successfully')),
+          const SnackBar(
+            content: Text('Turnierbaum erfolgreich initialisiert'),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to initialize bracket: $e')),
+          SnackBar(
+            content: Text(
+              'Initialisierung des Turnierbaums fehlgeschlagen: ${e.toString().replaceFirst('Exception: ', '')}',
+            ),
+          ),
         );
       }
     }
@@ -51,7 +57,7 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
     final result = await showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Select Winner'),
+        title: const Text('Sieger auswählen'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -69,11 +75,11 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
           if (match.hasWinner)
             TextButton(
               onPressed: () => Navigator.pop(context, -1), // Reset signal
-              child: const Text('Reset'),
+              child: const Text('Zurücksetzen'),
             ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Abbrechen'),
           ),
         ],
       ),
@@ -91,14 +97,22 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result == -1 ? 'Match reset' : 'Winner set successfully'),
+              content: Text(
+                result == -1
+                    ? 'Match zurückgesetzt'
+                    : 'Sieger erfolgreich festgelegt',
+              ),
             ),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
+            SnackBar(
+              content: Text(
+                'Fehler: ${e.toString().replaceFirst('Exception: ', '')}',
+              ),
+            ),
           );
         }
       }
@@ -122,7 +136,11 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Text(
+                'Fehler: ${snapshot.error.toString().replaceFirst('Exception: ', '')}',
+              ),
+            );
           }
 
           final teams = snapshot.data![0] as List<Team>;
@@ -135,19 +153,19 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Bracket not initialized yet',
+                    'Der Turnierbaum wurde noch nicht initialisiert',
                     style: TextStyle(fontSize: 18),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: teams.length >= 2 ? _initializeBracket : null,
-                    child: const Text('Initialize Bracket'),
+                    child: const Text('Turnierbaum initialisieren'),
                   ),
                   if (teams.length < 2)
                     const Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Text(
-                        'Need at least 2 teams',
+                        'Mindestens 2 Teams erforderlich',
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -208,11 +226,11 @@ class _BracketBoard extends StatelessWidget {
   });
 
   String _roundLabel(int round) {
-    if (round == roundCount - 1) return 'Winner';
+    if (round == roundCount - 1) return 'Sieger';
     final teamsInRound = bracketSize ~/ (1 << round);
-    if (teamsInRound == 2) return 'Final';
-    if (teamsInRound == 4) return 'Semi-finals';
-    return 'Quarter-finals';
+    if (teamsInRound == 2) return 'Finale';
+    if (teamsInRound == 4) return 'Halbfinale';
+    return 'Viertelfinale';
   }
 
   double _cardTop(int round, int index) {
@@ -273,7 +291,7 @@ class _BracketBoard extends StatelessWidget {
       // Match cards
       for (int i = 0; i < cardsInRound; i++) {
         final match = _findMatch(round, i);
-        
+
         children.add(
           Positioned(
             left: left,
@@ -292,14 +310,14 @@ class _BracketBoard extends StatelessWidget {
                       }
                     }
                   : match != null && match.hasWinner
-                      ? () {
-                          final team1 = teamMap[match.team1Id];
-                          final team2 = teamMap[match.team2Id];
-                          if (team1 != null && team2 != null) {
-                            onMatchTap(match, team1, team2);
-                          }
-                        }
-                      : null,
+                  ? () {
+                      final team1 = teamMap[match.team1Id];
+                      final team2 = teamMap[match.team2Id];
+                      if (team1 != null && team2 != null) {
+                        onMatchTap(match, team1, team2);
+                      }
+                    }
+                  : null,
             ),
           ),
         );
@@ -376,11 +394,7 @@ class _MatchCard extends StatelessWidget {
   final Map<int, Team> teamMap;
   final VoidCallback? onTap;
 
-  const _MatchCard({
-    this.match,
-    required this.teamMap,
-    this.onTap,
-  });
+  const _MatchCard({this.match, required this.teamMap, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -430,7 +444,7 @@ class _MatchCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'vs',
+                  'vs.',
                   style: TextStyle(
                     fontSize: 10,
                     color: colorScheme.onSurface.withValues(alpha: 0.6),

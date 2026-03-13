@@ -14,11 +14,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, provider, child) {
-        final username = provider.username ?? "Unknown User";
-        final avatarText = username.length >= 3 
-            ? username.substring(0, 3).toUpperCase() 
+        final username = provider.username ?? 'Unbekannter Benutzer';
+        final avatarText = username.length >= 3
+            ? username.substring(0, 3).toUpperCase()
             : username.toUpperCase();
-        
+
         return Column(
           children: [
             SizedBox(

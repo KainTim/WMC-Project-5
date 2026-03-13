@@ -23,9 +23,13 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.teamToEdit?.name ?? '');
+    _nameController = TextEditingController(
+      text: widget.teamToEdit?.name ?? '',
+    );
     _tagController = TextEditingController(text: widget.teamToEdit?.tag ?? '');
-    _descriptionController = TextEditingController(text: widget.teamToEdit?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.teamToEdit?.description ?? '',
+    );
   }
 
   void _submitForm() async {
@@ -42,9 +46,9 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
           tag: _tagController.text,
           description: _descriptionController.text,
         );
-        if (!context.mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Team updated successfully')),
+          const SnackBar(content: Text('Team erfolgreich aktualisiert')),
         );
       } else {
         await provider.createTeam(
@@ -52,20 +56,24 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
           tag: _tagController.text,
           description: _descriptionController.text,
         );
-        if (!context.mounted) return;
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Team created successfully')),
+          const SnackBar(content: Text('Team erfolgreich erstellt')),
         );
       }
-      if (!context.mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(
+          content: Text(
+            'Fehler: ${e.toString().replaceFirst('Exception: ', '')}',
+          ),
+        ),
       );
     } finally {
-      if (context.mounted) setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -82,7 +90,7 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
     final isEditing = widget.teamToEdit != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Team' : 'Create Team'),
+        title: Text(isEditing ? 'Team bearbeiten' : 'Team erstellen'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -94,12 +102,12 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Team Name',
-                  hintText: 'Enter team name',
+                  labelText: 'Teamname',
+                  hintText: 'Teamname eingeben',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Team name is required';
+                    return 'Der Teamname ist erforderlich';
                   }
                   return null;
                 },
@@ -108,17 +116,17 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
               TextFormField(
                 controller: _tagController,
                 decoration: const InputDecoration(
-                  labelText: 'Team Tag',
-                  hintText: 'Enter team tag (max 3 characters)',
+                  labelText: 'Teamkürzel',
+                  hintText: 'Teamkürzel eingeben (max. 3 Zeichen)',
                 ),
                 maxLength: 3,
                 textCapitalization: TextCapitalization.characters,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Team tag is required';
+                    return 'Das Teamkürzel ist erforderlich';
                   }
                   if (value.length > 3) {
-                    return 'Tag must be at most 3 characters';
+                    return 'Das Kürzel darf höchstens 3 Zeichen lang sein';
                   }
                   return null;
                 },
@@ -127,8 +135,8 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
-                  labelText: 'Description',
-                  hintText: 'Enter team description (optional)',
+                  labelText: 'Beschreibung',
+                  hintText: 'Teambeschreibung eingeben (optional)',
                 ),
                 maxLines: 3,
               ),
@@ -137,7 +145,7 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
                 onPressed: _isLoading ? null : _submitForm,
                 child: _isLoading
                     ? const CircularProgressIndicator()
-                    : Text(isEditing ? 'Update Team' : 'Create Team'),
+                    : Text(isEditing ? 'Team aktualisieren' : 'Team erstellen'),
               ),
             ],
           ),

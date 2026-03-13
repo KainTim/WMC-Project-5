@@ -183,7 +183,7 @@ export class TeamService {
         (err: Error | null, row: any) => {
           if (err) return reject(err);
           if (row.count >= 4) {
-            return reject(new Error('Team already has maximum of 4 members'));
+            return reject(new Error('Das Team hat bereits die maximale Anzahl von 4 Mitgliedern'));
           }
           
           const stmt = this.db.prepare(`INSERT INTO TeamMembers (teamId, userId, role) VALUES (?, ?, ?)`);
