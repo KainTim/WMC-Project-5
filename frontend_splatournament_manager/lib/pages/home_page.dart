@@ -29,25 +29,22 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () async {
               try {
-                if (_selectedIndex == 0) {
                   final tournamentProvider = Provider.of<TournamentProvider>(
                     context,
                     listen: false,
                   );
                   await tournamentProvider.refreshAvailableTournaments();
-                } else {
                   final teamProvider = Provider.of<TeamProvider>(
                     context,
                     listen: false,
                   );
                   await teamProvider.refreshTeams();
-                }
               } catch (_) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Aktualisierung der ${_selectedIndex == 0 ? "Turniere" : "Teams"} fehlgeschlagen',
+                      'Aktualisierung fehlgeschlagen',
                     ),
                   ),
                 );
