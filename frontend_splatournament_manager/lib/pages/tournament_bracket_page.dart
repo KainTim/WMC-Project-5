@@ -298,13 +298,13 @@ class _BracketBoard extends StatelessWidget {
 
       // Match cards
       for (int i = 0; i < cardsInRound; i++) {
-        final isSieger = round == roundCount - 1;
-        final match = isSieger
+        final isTournamentWinner = round == roundCount - 1;
+        final match = isTournamentWinner
             ? _findMatch(round - 1, 0)
             : _findMatch(round, i);
 
         // Lock match if its downstream match already has a winner
-        final downstreamMatch = (!isSieger && round < roundCount - 2)
+        final downstreamMatch = (!isTournamentWinner && round < roundCount - 2)
             ? _findMatch(round + 1, i ~/ 2)
             : null;
         final isLocked = downstreamMatch != null && downstreamMatch.hasWinner;
@@ -318,9 +318,9 @@ class _BracketBoard extends StatelessWidget {
             child: _MatchCard(
               match: match,
               teamMap: teamMap,
-              showWinnerOnly: isSieger,
+              showWinnerOnly: isTournamentWinner,
               isLocked: isLocked,
-              onTap: isSieger || isLocked
+              onTap: isTournamentWinner || isLocked
                   ? null
                   : match != null && match.canBePlayed && !match.hasWinner
                   ? () {
