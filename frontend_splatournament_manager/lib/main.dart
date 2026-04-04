@@ -27,7 +27,7 @@ void main() {
 }
 
 class SplatournamentApp extends StatelessWidget {
-  static const String baseUrl = "http://10.0.2.2:3000";
+  static const String baseUrl = "https://kaintim.duckdns.org/splatournament-backend";
   const SplatournamentApp({super.key});
   @override
   Widget build(BuildContext context) {
